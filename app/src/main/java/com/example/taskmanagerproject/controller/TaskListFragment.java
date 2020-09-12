@@ -22,6 +22,7 @@ import java.util.List;
 public class TaskListFragment extends Fragment {
 
     public static final String ARGS_TASK_LIST = "argsTaskList";
+
     private RecyclerView mRecyclerView;
     private static List<Task> mTaskList = new ArrayList<>();
 
