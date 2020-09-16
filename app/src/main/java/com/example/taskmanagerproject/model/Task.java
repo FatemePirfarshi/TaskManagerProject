@@ -4,13 +4,17 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-public class Task implements Serializable {
+public class Task{
 
     private UUID mId;
     private String mDiscription;
     private String mTitle;
     private Date mDate;
     private State mState;
+
+    public UUID getId() {
+        return mId;
+    }
 
     public Task(){
         mId = mId.randomUUID();

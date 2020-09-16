@@ -10,10 +10,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.model.Task;
+import com.example.taskmanagerproject.repository.TaskRepository;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,10 +28,20 @@ public class TaskListFragment extends Fragment {
     public static final String ARGS_TASK_LIST = "argsTaskList";
 
     private RecyclerView mRecyclerView;
-    private static List<Task> mTaskList = new ArrayList<>();
+    private ImageView mImageView;
+    private LinearLayout mLayoutDefault;
 
-    public TaskListFragment(List<Task> tasks) {
+    private int mPosition = 0;
+
+    private static List<Task> mTaskList = new ArrayList<>();
+    private TaskRepository mRepository;
+    private TaskAdapter mTaskAdapter;
+
+    public TaskListFragment(List<Task> tasks, int position) {
         mTaskList = tasks;
+        if (tasks.size() == 0)
+            mPosition = position;
+        mRepository = TaskRepository.getInstance(mPosition);
         // Required empty public constructor
     }
 
@@ -35,8 +49,8 @@ public class TaskListFragment extends Fragment {
         return mTaskList;
     }
 
-    public static TaskListFragment newInstance(List<Task> tasks) {
-        TaskListFragment fragment = new TaskListFragment(tasks);
+    public static TaskListFragment newInstance(List<Task> tasks, int position) {
+        TaskListFragment fragment = new TaskListFragment(tasks, position);
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -60,12 +74,23 @@ public class TaskListFragment extends Fragment {
 
     private void findViews(View view) {
         mRecyclerView = view.findViewById(R.id.recycler_view_task_list);
+        mImageView = view.findViewById(R.id.imgview_task_list);
+        mLayoutDefault = view.findViewById(R.id.default_pic_layout);
     }
 
     private void initViews() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        if (mTaskList.size() != 0)
+            mLayoutDefault.setVisibility(View.GONE);
+
         mRecyclerView.setAdapter(new TaskAdapter(mTaskList));
+        mTaskAdapter = new TaskAdapter(mTaskList);
+        mTaskAdapter.notifyItemInserted(mTaskList.size());
+
+        int imageRes = mRepository.checkImageState(mPosition);
+
+        mImageView.setImageResource(imageRes);
     }
 
     class TaskHolder extends RecyclerView.ViewHolder {
@@ -73,6 +98,7 @@ public class TaskListFragment extends Fragment {
         private TextView mTitle;
         private TextView mDate;
         private TextView mStartTitle;
+        private RelativeLayout mRootLayout;
 
         private Task mTask;
 
@@ -81,14 +107,16 @@ public class TaskListFragment extends Fragment {
             mTitle = itemView.findViewById(R.id.txtview_title);
             mDate = itemView.findViewById(R.id.txtview_date);
             mStartTitle = itemView.findViewById(R.id.task_title_start);
+            mRootLayout = itemView.findViewById(R.id.row_root_layout);
+
         }
 
         public void bindTask(Task task) {
             mTask = task;
 
             mTitle.setText(task.getTitle());
-            mDate.setText(task.getDate().toString());
-            mStartTitle.setText(task.getTitle().charAt(0));
+            //     mDate.setText(task.getDate().toString());
+            mStartTitle.setText(Character.toString(task.getTitle().charAt(0)));
         }
     }
 
@@ -127,5 +155,6 @@ public class TaskListFragment extends Fragment {
         public int getItemCount() {
             return mTasks.size();
         }
+
     }
 }

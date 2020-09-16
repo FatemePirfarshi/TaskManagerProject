@@ -1,8 +1,11 @@
 package com.example.taskmanagerproject.controller;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,16 +21,23 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.example.taskmanagerproject.R;
+import com.example.taskmanagerproject.model.Task;
+import com.example.taskmanagerproject.repository.TaskRepository;
+import com.google.android.material.tabs.TabLayout;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddTaskFragment extends DialogFragment {
 
     public static final int REQUEST_CODE_DATE_PiCKER = 0;
+    public static final int REQUEST_CODE_TIME_PICKER = 1;
 
     public static final String FRAGMENT_TAG_DATE_PICKER = "datePicker";
     public static final String FRAGMENT_TAG_TIME_PICKER = "timePicker";
-    public static final int REQUEST_CODE_TIME_PICKER = 1;
+    public static final String ARGS_LIST_POSITOIN = "argsListPositoin";
+    public static final String EXTRA_CURRENT_POSITION = "extraCurrentPosition";
 
     private EditText mEditTextTitle;
     private EditText mEditTextDescription;
@@ -35,13 +45,20 @@ public class AddTaskFragment extends DialogFragment {
     private Button mButtonTime;
     private CheckBox mCheckBoxDone;
 
+    private Task mTask = new Task();
+
+    private TaskRepository mRepository;
+    private List<Task> mCurrentList;
+    private int mCurrentPosition;
+
     public AddTaskFragment() {
         // Required empty public constructor
     }
 
-    public static AddTaskFragment newInstance() {
+    public static AddTaskFragment newInstance(int position) {
         AddTaskFragment fragment = new AddTaskFragment();
         Bundle args = new Bundle();
+        args.putInt(ARGS_LIST_POSITOIN, position);
         fragment.setArguments(args);
         return fragment;
     }
@@ -49,6 +66,9 @@ public class AddTaskFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mCurrentPosition = getArguments().getInt(ARGS_LIST_POSITOIN);
+        mRepository = TaskRepository.getInstance(mCurrentPosition);
+        mCurrentList = mRepository.getListWithPosition(mCurrentPosition);
     }
 
     @NonNull
@@ -64,7 +84,17 @@ public class AddTaskFragment extends DialogFragment {
 
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
-                .setPositiveButton("Save", null)
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        mTask.setTitle(mEditTextTitle.getText().toString());
+                        mTask.setDiscription(mEditTextDescription.getText().toString());
+                        mRepository.insertTask(mTask , mCurrentPosition);
+
+                        TaskPagerActivity.start(getActivity(), mCurrentPosition);
+                    }
+                })
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
 
@@ -78,6 +108,8 @@ public class AddTaskFragment extends DialogFragment {
     }
 
     private void initViews() {
+        mTask.setTitle(mEditTextTitle.getText().toString());
+        mTask.setDiscription(mEditTextDescription.getText().toString());
         mButtonDate.setText("Date");
         mButtonTime.setText("Time");
 //        mButtonDate.setText(new SimpleDateFormat("yyyy.MM.dd").format(getDate));
@@ -93,7 +125,7 @@ public class AddTaskFragment extends DialogFragment {
                 datePickerFragment.setTargetFragment(
                         AddTaskFragment.this, REQUEST_CODE_DATE_PiCKER);
 
-                datePickerFragment.show( getActivity().getSupportFragmentManager(),
+                datePickerFragment.show(getActivity().getSupportFragmentManager(),
                         FRAGMENT_TAG_DATE_PICKER);
             }
         });
@@ -103,7 +135,7 @@ public class AddTaskFragment extends DialogFragment {
                 TimePickerFragment timePickerFragment = TimePickerFragment.newInstance();
 
                 timePickerFragment.setTargetFragment(
-                        AddTaskFragment.this , REQUEST_CODE_TIME_PICKER);
+                        AddTaskFragment.this, REQUEST_CODE_TIME_PICKER);
 
                 timePickerFragment.show(getActivity().getSupportFragmentManager(),
                         FRAGMENT_TAG_TIME_PICKER);
