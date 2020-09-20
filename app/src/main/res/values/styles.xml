@@ -7,4 +7,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="MyDatePickerTheme" parent="AppTheme">
+        <item name="colorAccent">#FF754A</item>
+    </style>
+
 </resources>

@@ -3,30 +3,28 @@ package com.example.taskmanagerproject.controller;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.repository.TaskRepository;
-import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class AddTaskFragment extends DialogFragment {
@@ -45,11 +43,17 @@ public class AddTaskFragment extends DialogFragment {
     private Button mButtonTime;
     private CheckBox mCheckBoxDone;
 
-    private Task mTask = new Task();
+    private LinearLayout mRootLinearLayout;
 
     private TaskRepository mRepository;
     private List<Task> mCurrentList;
     private int mCurrentPosition;
+
+    private Task mTask = new Task();
+
+    public Task getTask() {
+        return mTask;
+    }
 
     public AddTaskFragment() {
         // Required empty public constructor
@@ -88,11 +92,18 @@ public class AddTaskFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        mTask.setTitle(mEditTextTitle.getText().toString());
-                        mTask.setDiscription(mEditTextDescription.getText().toString());
-                        mRepository.insertTask(mTask , mCurrentPosition);
+                        if (mEditTextTitle.getText().toString().trim().isEmpty())
+                            //Snackbar.make(mRootLinearLayout, "this field can't belank!!", Snackbar.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(),
+                                    "Title field can't be blank!!", Toast.LENGTH_SHORT).show();
+                        else {
+                            mTask.setTitle(mEditTextTitle.getText().toString());
+                            mTask.setDiscription(mEditTextDescription.getText().toString());
+                            mRepository.insertTask(mTask, mCurrentPosition);
+                            mRepository.updateTask(mTask);
 
-                        TaskPagerActivity.start(getActivity(), mCurrentPosition);
+                            TaskPagerActivity.start(getActivity(), mCurrentPosition);
+                        }
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)
@@ -105,22 +116,22 @@ public class AddTaskFragment extends DialogFragment {
         mEditTextDescription = view.findViewById(R.id.edittxt_description);
         mButtonDate = view.findViewById(R.id.btn_date);
         mButtonTime = view.findViewById(R.id.btn_time);
+        mRootLinearLayout = view.findViewById(R.id.root_linear_layout);
     }
 
     private void initViews() {
         mTask.setTitle(mEditTextTitle.getText().toString());
         mTask.setDiscription(mEditTextDescription.getText().toString());
-        mButtonDate.setText("Date");
-        mButtonTime.setText("Time");
-//        mButtonDate.setText(new SimpleDateFormat("yyyy.MM.dd").format(getDate));
-//        mButtonTime.setText(new SimpleDateFormat("HH:mm:ss").format(mCrime.getDate()));
+
+        mButtonDate.setText(new SimpleDateFormat("yyyy.MM.dd").format(mTask.getDate()));
+        mButtonTime.setText(new SimpleDateFormat("HH:mm:ss").format(mTask.getDate()));
     }
 
     private void setListeners() {
         mButtonDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance();
+                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(mTask.getDate());
 
                 datePickerFragment.setTargetFragment(
                         AddTaskFragment.this, REQUEST_CODE_DATE_PiCKER);
@@ -129,10 +140,11 @@ public class AddTaskFragment extends DialogFragment {
                         FRAGMENT_TAG_DATE_PICKER);
             }
         });
+
         mButtonTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimePickerFragment timePickerFragment = TimePickerFragment.newInstance();
+                TimePickerFragment timePickerFragment = TimePickerFragment.newInstance(mTask.getDate());
 
                 timePickerFragment.setTargetFragment(
                         AddTaskFragment.this, REQUEST_CODE_TIME_PICKER);
@@ -141,5 +153,36 @@ public class AddTaskFragment extends DialogFragment {
                         FRAGMENT_TAG_TIME_PICKER);
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        if (resultCode != Activity.RESULT_OK || data == null)
+            return;
+
+        if (requestCode == REQUEST_CODE_DATE_PiCKER) {
+            Date userSelectedDate =
+                    (Date) data.getSerializableExtra(DatePickerFragment.USER_SELECTED_DATE);
+
+            updateTaskDate(userSelectedDate);
+        }
+
+        if (requestCode == REQUEST_CODE_TIME_PICKER) {
+            Long userSelectedTime =
+                    data.getLongExtra(TimePickerFragment.USER_SELECTED_TIME, 0);
+            updateTaskTime(userSelectedTime);
+        }
+
+    }
+
+    public void updateTaskDate(Date userSelectedDate) {
+        mTask.setDate(userSelectedDate);
+        mButtonDate.setText(new SimpleDateFormat("yyyy.MM.dd").format(mTask.getDate()));
+    }
+
+    public void updateTaskTime(Long userSelectedTime) {
+        mTask.getDate().setTime(userSelectedTime);
+        mButtonTime.setText(new SimpleDateFormat("HH:mm:ss").format(mTask.getDate()));
     }
 }

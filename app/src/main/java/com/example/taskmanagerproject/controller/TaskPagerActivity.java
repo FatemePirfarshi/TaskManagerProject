@@ -31,8 +31,9 @@ public class TaskPagerActivity extends AppCompatActivity {
 
     public static final String EXTRA_TASK_ID = "com.example.taskmanagerproject.extraTaskId";
     public static final String FRAGMENT_TAG_ADD_TASK = "fragmentTagAddTask";
-    public static final String EXTRA_LIST_OF_TASK = "extraListOfTask";
-    public static final String EXTRA_CURRENT_POSITION = "extraCurrentPosition";
+    public static final String EXTRA_CURRENT_POSITION =
+            "com.example.taskmanagerproject.extraCurrentPosition";
+
     private int mCurrentPosition;
 
     public static void start(Context context, int position) {
@@ -72,9 +73,9 @@ public class TaskPagerActivity extends AppCompatActivity {
 
     private void initViews() {
 
-        mFragmentList.add(TaskListFragment.newInstance(mRepository.getTodoTAsk(), 0));
-        mFragmentList.add(TaskListFragment.newInstance(mRepository.getDoingTAsk(), 1));
-        mFragmentList.add(TaskListFragment.newInstance(mRepository.getDoneTAsk(), 2));
+        mFragmentList.add(TaskListFragment.newInstance(mRepository.getTodoTask(), 0));
+        mFragmentList.add(TaskListFragment.newInstance(mRepository.getDoingTask(), 1));
+        mFragmentList.add(TaskListFragment.newInstance(mRepository.getDoneTask(), 2));
 
         TaskPagerAdapter taskPagerAdapter = new TaskPagerAdapter(this);
         mViewPager2.setAdapter(taskPagerAdapter);
@@ -99,6 +100,7 @@ public class TaskPagerActivity extends AppCompatActivity {
                 mCurrentPosition = mTabLayout.getSelectedTabPosition();
                 AddTaskFragment.newInstance(mCurrentPosition)
                         .show(getSupportFragmentManager(), FRAGMENT_TAG_ADD_TASK);
+
             }
         });
     }
@@ -115,7 +117,6 @@ public class TaskPagerActivity extends AppCompatActivity {
             mTaskListFragment =
                     TaskListFragment.newInstance(
                             mRepository.getListWithPosition(position), position);
-            //   mCurrentPosition = position;
             return mTaskListFragment;
         }
 

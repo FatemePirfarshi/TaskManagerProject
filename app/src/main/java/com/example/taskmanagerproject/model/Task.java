@@ -11,6 +11,7 @@ public class Task{
     private String mTitle;
     private Date mDate;
     private State mState;
+    private boolean mDone;
 
     public UUID getId() {
         return mId;
@@ -18,6 +19,7 @@ public class Task{
 
     public Task(){
         mId = mId.randomUUID();
+        mDate = new Date();
     }
 
     public String getDiscription() {
@@ -50,5 +52,13 @@ public class Task{
 
     public void setState(State state) {
         mState = state;
+    }
+
+    public boolean isDone() {
+        return mDone;
+    }
+
+    public void setDone(boolean done) {
+        mDone = done;
     }
 }

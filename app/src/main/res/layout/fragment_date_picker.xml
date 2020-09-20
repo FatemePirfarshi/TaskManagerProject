@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <DatePicker
-    android:id="@+id/date_picker_task"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@style/MyDatePickerTheme"
+    android:id="@+id/date_picker_task"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:accessibilityHeading="false"
+    android:background="#F6EFEF"
+    android:endYear="2030"
+    android:headerBackground="#FF754A"
+    android:startYear="2000"
+    android:yearListSelectorColor="#FF754A"
     tools:context=".controller.DatePickerFragment">
 
 </DatePicker>

@@ -113,10 +113,9 @@ public class TaskListFragment extends Fragment {
 
         public void bindTask(Task task) {
             mTask = task;
-
             mTitle.setText(task.getTitle());
-            //     mDate.setText(task.getDate().toString());
             mStartTitle.setText(Character.toString(task.getTitle().charAt(0)));
+            mDate.setText(task.getDate().toString());
         }
     }
 

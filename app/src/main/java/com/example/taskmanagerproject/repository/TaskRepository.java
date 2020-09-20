@@ -1,16 +1,12 @@
 package com.example.taskmanagerproject.repository;
 
-import android.view.View;
-import android.widget.ImageView;
-
-import androidx.annotation.NonNull;
-
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.model.State;
 import com.example.taskmanagerproject.model.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class TaskRepository implements IRepository {
 
@@ -57,34 +53,45 @@ public class TaskRepository implements IRepository {
         for (int i = 0; i < arrayTaskList.length; i++) {
             arrayTaskList[i] = new ArrayList<>();
         }
-        mCurrentPosition = position;
     }
 
     @Override
-    public List<Task> getTodoTAsk() {
+    public List<Task> getTodoTask() {
         return arrayTaskList[0];
     }
 
     @Override
-    public List<Task> getDoingTAsk() {
+    public List<Task> getDoingTask() {
         return arrayTaskList[1];
     }
 
     @Override
-    public List<Task> getDoneTAsk() {
+    public List<Task> getDoneTask() {
         return arrayTaskList[2];
     }
 
     @Override
     public List<Task> getListWithPosition(int position) {
+        mCurrentPosition = position;
+
         switch (position) {
             case 0:
-                return arrayTaskList[0];
+                return getTodoTask();
             case 1:
-                return arrayTaskList[1];
+                return getDoingTask();
             default:
-                return arrayTaskList[2];
+                return getDoneTask();
         }
+    }
+
+    @Override
+    public Task getTask(UUID id) {
+
+        for (Task t : getListWithPosition(mCurrentPosition)) {
+            if(t.getId().equals(id))
+                return t;
+        }
+        return null;
     }
 
     @Override
@@ -105,6 +112,15 @@ public class TaskRepository implements IRepository {
     @Override
     public void editTask(Task task) {
 
+    }
+
+    @Override
+    public void updateTask(Task task) {
+        Task findTask = getTask(task.getId());
+//        findTask.setTitle(task.getTitle());
+//        findTask.setDiscription(task.getDiscription());
+//        findTask.setDone(task.isDone());
+        findTask.setDate(task.getDate());
     }
 
     @Override

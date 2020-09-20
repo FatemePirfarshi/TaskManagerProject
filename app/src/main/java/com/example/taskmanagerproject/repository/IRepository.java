@@ -1,16 +1,15 @@
 package com.example.taskmanagerproject.repository;
 
-import android.widget.ImageView;
-
 import com.example.taskmanagerproject.model.State;
 import com.example.taskmanagerproject.model.Task;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface IRepository {
-    List<Task> getTodoTAsk();
-    List<Task> getDoingTAsk();
-    List<Task> getDoneTAsk();
+    List<Task> getTodoTask();
+    List<Task> getDoingTask();
+    List<Task> getDoneTask();
     List<Task> getListWithPosition(int position);
     int checkImageState(int position);
 
@@ -18,4 +17,6 @@ public interface IRepository {
     void deleteTask(Task task);
     void changeState(Task task,State state);
     void editTask(Task task);
+    void updateTask(Task task);
+    Task getTask(UUID id);
 }

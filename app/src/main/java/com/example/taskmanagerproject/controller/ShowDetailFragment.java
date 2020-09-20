@@ -90,29 +90,29 @@ public class ShowDetailFragment extends DialogFragment {
     }
 
     private void setListeners() {
-        mButtonDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance();
-
-                datePickerFragment.setTargetFragment(
-                        ShowDetailFragment.this, REQUEST_CODE_DATE_PiCKER);
-
-                datePickerFragment.show( getActivity().getSupportFragmentManager(),
-                        FRAGMENT_TAG_DATE_PICKER);
-            }
-        });
-        mButtonTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TimePickerFragment timePickerFragment = TimePickerFragment.newInstance();
-
-                timePickerFragment.setTargetFragment(
-                        ShowDetailFragment.this , REQUEST_CODE_TIME_PICKER);
-
-                timePickerFragment.show(getActivity().getSupportFragmentManager(),
-                        FRAGMENT_TAG_TIME_PICKER);
-            }
-        });
+//        mButtonDate.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance();
+//
+//                datePickerFragment.setTargetFragment(
+//                        ShowDetailFragment.this, REQUEST_CODE_DATE_PiCKER);
+//
+//                datePickerFragment.show( getActivity().getSupportFragmentManager(),
+//                        FRAGMENT_TAG_DATE_PICKER);
+//            }
+//        });
+//        mButtonTime.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                TimePickerFragment timePickerFragment = TimePickerFragment.newInstance();
+//
+//                timePickerFragment.setTargetFragment(
+//                        ShowDetailFragment.this , REQUEST_CODE_TIME_PICKER);
+//
+//                timePickerFragment.show(getActivity().getSupportFragmentManager(),
+//                        FRAGMENT_TAG_TIME_PICKER);
+//            }
+//        });
     }
 }
