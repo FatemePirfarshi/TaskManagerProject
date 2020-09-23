@@ -34,8 +34,7 @@ public class AddTaskFragment extends DialogFragment {
 
     public static final String FRAGMENT_TAG_DATE_PICKER = "datePicker";
     public static final String FRAGMENT_TAG_TIME_PICKER = "timePicker";
-    public static final String ARGS_LIST_POSITOIN = "argsListPositoin";
-    public static final String EXTRA_CURRENT_POSITION = "extraCurrentPosition";
+    public static final String ARGS_LIST_POSITOIN = "listPositoin";
 
     private EditText mEditTextTitle;
     private EditText mEditTextDescription;
@@ -99,6 +98,7 @@ public class AddTaskFragment extends DialogFragment {
                         else {
                             mTask.setTitle(mEditTextTitle.getText().toString());
                             mTask.setDiscription(mEditTextDescription.getText().toString());
+                            mTask.setDone(mCheckBoxDone.isChecked());
                             mRepository.insertTask(mTask, mCurrentPosition);
                             mRepository.updateTask(mTask);
 
@@ -116,12 +116,14 @@ public class AddTaskFragment extends DialogFragment {
         mEditTextDescription = view.findViewById(R.id.edittxt_description);
         mButtonDate = view.findViewById(R.id.btn_date);
         mButtonTime = view.findViewById(R.id.btn_time);
+        mCheckBoxDone = view.findViewById(R.id.checkBox_done);
         mRootLinearLayout = view.findViewById(R.id.root_linear_layout);
     }
 
     private void initViews() {
         mTask.setTitle(mEditTextTitle.getText().toString());
         mTask.setDiscription(mEditTextDescription.getText().toString());
+        mTask.setDone(mCheckBoxDone.isChecked());
 
         mButtonDate.setText(new SimpleDateFormat("yyyy.MM.dd").format(mTask.getDate()));
         mButtonTime.setText(new SimpleDateFormat("HH:mm:ss").format(mTask.getDate()));

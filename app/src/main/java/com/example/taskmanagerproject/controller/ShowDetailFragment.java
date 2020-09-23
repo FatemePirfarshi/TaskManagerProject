@@ -17,6 +17,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.example.taskmanagerproject.R;
+import com.example.taskmanagerproject.model.Task;
+import com.example.taskmanagerproject.repository.TaskRepository;
+
+import java.text.SimpleDateFormat;
+import java.util.UUID;
 
 public class ShowDetailFragment extends DialogFragment {
 
@@ -25,6 +30,8 @@ public class ShowDetailFragment extends DialogFragment {
 
     public static final String FRAGMENT_TAG_DATE_PICKER = "datePicker";
     public static final String FRAGMENT_TAG_TIME_PICKER = "timePicker";
+    public static final String ARGS_TASK_ID = "argsTaskId";
+    public static final String ARGS_TASK_POSITION = "argsTaskPosition";
 
     private EditText mEditTextTitle;
     private EditText mEditTextDescription;
@@ -32,13 +39,20 @@ public class ShowDetailFragment extends DialogFragment {
     private Button mButtonTime;
     private CheckBox mCheckBoxDone;
 
+    private Task mTask;
+    private UUID mTaskId;
+    private int mPosition;
+    private TaskRepository mRepository;
+
     public ShowDetailFragment() {
         // Required empty public constructor
     }
 
-    public static ShowDetailFragment newInstance() {
+    public static ShowDetailFragment newInstance(UUID id, int position) {
         ShowDetailFragment fragment = new ShowDetailFragment();
         Bundle args = new Bundle();
+        args.putSerializable(ARGS_TASK_ID, id);
+        args.putInt(ARGS_TASK_POSITION, position);
         fragment.setArguments(args);
         return fragment;
     }
@@ -47,14 +61,8 @@ public class ShowDetailFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_show_detail, container, false);
-        return view;
+        mTaskId = (UUID) getArguments().getSerializable(ARGS_TASK_ID);
+        mPosition = getArguments().getInt(ARGS_TASK_POSITION);
     }
 
     @NonNull
@@ -80,39 +88,48 @@ public class ShowDetailFragment extends DialogFragment {
         mEditTextDescription = view.findViewById(R.id.edittxt_description);
         mButtonDate = view.findViewById(R.id.btn_date);
         mButtonTime = view.findViewById(R.id.btn_time);
+        mCheckBoxDone = view.findViewById(R.id.checkBox_done);
     }
 
     private void initViews() {
-        mButtonDate.setText("Date");
-        mButtonTime.setText("Time");
-//        mButtonDate.setText(new SimpleDateFormat("yyyy.MM.dd").format(getDate));
-//        mButtonTime.setText(new SimpleDateFormat("HH:mm:ss").format(mCrime.getDate()));
+        mRepository = TaskRepository.getInstance(mPosition);
+        mTask = mRepository.getTask(mTaskId);
+
+        mEditTextTitle.setText(mTask.getTitle());
+        mEditTextDescription.setText(mTask.getDiscription());
+        mCheckBoxDone.setChecked(mTask.isDone());
+
+        mButtonDate.setText(new SimpleDateFormat("yyyy.MM.dd").format(mTask.getDate()));
+        mButtonTime.setText(new SimpleDateFormat("HH:mm:ss").format(mTask.getDate()));
     }
 
     private void setListeners() {
-//        mButtonDate.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                DatePickerFragment datePickerFragment = DatePickerFragment.newInstance();
-//
-//                datePickerFragment.setTargetFragment(
-//                        ShowDetailFragment.this, REQUEST_CODE_DATE_PiCKER);
-//
-//                datePickerFragment.show( getActivity().getSupportFragmentManager(),
-//                        FRAGMENT_TAG_DATE_PICKER);
-//            }
-//        });
-//        mButtonTime.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                TimePickerFragment timePickerFragment = TimePickerFragment.newInstance();
-//
-//                timePickerFragment.setTargetFragment(
-//                        ShowDetailFragment.this , REQUEST_CODE_TIME_PICKER);
-//
-//                timePickerFragment.show(getActivity().getSupportFragmentManager(),
-//                        FRAGMENT_TAG_TIME_PICKER);
-//            }
-//        });
+        mButtonDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatePickerFragment datePickerFragment =
+                        DatePickerFragment.newInstance(mTask.getDate());
+
+                datePickerFragment.setTargetFragment(
+                        ShowDetailFragment.this, REQUEST_CODE_DATE_PiCKER);
+
+                datePickerFragment.show(getActivity().getSupportFragmentManager(),
+                        FRAGMENT_TAG_DATE_PICKER);
+            }
+        });
+
+        mButtonTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TimePickerFragment timePickerFragment =
+                        TimePickerFragment.newInstance(mTask.getDate());
+
+                timePickerFragment.setTargetFragment(
+                        ShowDetailFragment.this, REQUEST_CODE_TIME_PICKER);
+
+                timePickerFragment.show(getActivity().getSupportFragmentManager(),
+                        FRAGMENT_TAG_TIME_PICKER);
+            }
+        });
     }
 }

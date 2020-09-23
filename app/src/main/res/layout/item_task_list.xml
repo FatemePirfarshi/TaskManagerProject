@@ -5,7 +5,8 @@
     android:id="@+id/row_root_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    android:layout_margin="8dp"
+    android:background="#E6E5D8">
 
     <TextView
         android:id="@+id/task_title_start"

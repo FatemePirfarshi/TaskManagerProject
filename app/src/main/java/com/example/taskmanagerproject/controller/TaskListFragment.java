@@ -25,7 +25,8 @@ import java.util.List;
 
 public class TaskListFragment extends Fragment {
 
-    public static final String ARGS_TASK_LIST = "argsTaskList";
+    public static final int REQUEST_CODE_SHOW_DETAIL = 0;
+    public static final String FRAGMENT_TAG_SHOW_DETAIL = "ShowDetail";
 
     private RecyclerView mRecyclerView;
     private ImageView mImageView;
@@ -108,6 +109,20 @@ public class TaskListFragment extends Fragment {
             mDate = itemView.findViewById(R.id.txtview_date);
             mStartTitle = itemView.findViewById(R.id.task_title_start);
             mRootLayout = itemView.findViewById(R.id.row_root_layout);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ShowDetailFragment showDetailFragment =
+                            ShowDetailFragment.newInstance(mTask.getId(), mPosition);
+
+                    showDetailFragment.setTargetFragment(
+                            TaskListFragment.this, REQUEST_CODE_SHOW_DETAIL);
+
+                    showDetailFragment.show(
+                            getActivity().getSupportFragmentManager(),FRAGMENT_TAG_SHOW_DETAIL);
+                }
+            });
 
         }
 
