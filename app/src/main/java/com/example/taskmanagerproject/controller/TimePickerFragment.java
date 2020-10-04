@@ -19,7 +19,6 @@ import com.example.taskmanagerproject.R;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class TimePickerFragment extends DialogFragment {
 
@@ -64,10 +63,10 @@ public class TimePickerFragment extends DialogFragment {
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                          Date date = extractTimeFromTimePicker();
-                          date.setTime(mTimePicker.getHour());
-                        mCalendar.setTimeInMillis(mTaskDate.getTime());
-                          sendResult(mTaskDate.getTime());
+                          //Date date = extractTimeFromTimePicker();
+                         // date.setTime(mTimePicker.getHour());
+                       // mCalendar.setTimeInMillis(mTaskDate.getTime());
+                          sendResult();
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)
@@ -86,16 +85,23 @@ public class TimePickerFragment extends DialogFragment {
         mTimePicker.setMinute(minute);
     }
 
-    private Date extractTimeFromTimePicker(){
+//    private Date extractTimeFromTimePicker(){
+//
+//        mCalendar.setTimeInMillis(mTaskDate.getTime());
+//        return mCalendar.getTime();
+//    }
 
-        mCalendar.setTimeInMillis(mTaskDate.getTime());
-        return mCalendar.getTime();
-    }
+    private void sendResult(){
 
-    private void sendResult(Long userSelectedTime){
+        int hour = mTimePicker.getCurrentHour();
+        int minute =  mTimePicker.getCurrentMinute();
+
+        mTaskDate.setHours(hour);
+        mTaskDate.setMinutes(minute);
+
         Fragment fragment = getTargetFragment();
         Intent intent = new Intent();
-        intent.putExtra(USER_SELECTED_TIME, userSelectedTime);
+        intent.putExtra(USER_SELECTED_TIME, mTaskDate);
         fragment.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
     }
 }

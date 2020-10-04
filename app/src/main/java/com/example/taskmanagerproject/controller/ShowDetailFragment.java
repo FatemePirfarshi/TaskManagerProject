@@ -2,25 +2,24 @@ package com.example.taskmanagerproject.controller;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.repository.TaskRepository;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.UUID;
 
 public class ShowDetailFragment extends DialogFragment {
@@ -40,6 +39,7 @@ public class ShowDetailFragment extends DialogFragment {
     private CheckBox mCheckBoxDone;
 
     private Task mTask;
+    private List<Task> mTasks;
     private UUID mTaskId;
     private int mPosition;
     private TaskRepository mRepository;
@@ -63,6 +63,7 @@ public class ShowDetailFragment extends DialogFragment {
 
         mTaskId = (UUID) getArguments().getSerializable(ARGS_TASK_ID);
         mPosition = getArguments().getInt(ARGS_TASK_POSITION);
+        mRepository = TaskRepository.getInstance(mPosition);
     }
 
     @NonNull
@@ -77,10 +78,23 @@ public class ShowDetailFragment extends DialogFragment {
 
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
-                .setPositiveButton("Save", null)
-                .setPositiveButton("Edit", null)
-                .setNegativeButton("Delete", null)
-                .create();
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mTask.setTitle(mEditTextTitle.getText().toString());
+                        mTask.setDiscription(mEditTextDescription.getText().toString());
+                        mTask.setDone(mCheckBoxDone.isChecked());
+                        TaskPagerActivity.start(getActivity(), mRepository.getCurrentPosition());
+                    }
+                })
+                .setNeutralButton("Edit", null)
+                .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mRepository.deleteTask(mTask.getId());
+                        TaskPagerActivity.start(getActivity(), mRepository.getCurrentPosition());
+                    }
+                }).create();
     }
 
     private void findViews(View view) {
@@ -92,7 +106,6 @@ public class ShowDetailFragment extends DialogFragment {
     }
 
     private void initViews() {
-        mRepository = TaskRepository.getInstance(mPosition);
         mTask = mRepository.getTask(mTaskId);
 
         mEditTextTitle.setText(mTask.getTitle());

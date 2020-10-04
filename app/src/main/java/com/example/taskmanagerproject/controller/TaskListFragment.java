@@ -27,23 +27,24 @@ public class TaskListFragment extends Fragment {
 
     public static final int REQUEST_CODE_SHOW_DETAIL = 0;
     public static final String FRAGMENT_TAG_SHOW_DETAIL = "ShowDetail";
+    public static final String TASK_LIST_POSITION = "taskListPosition";
 
     private RecyclerView mRecyclerView;
     private ImageView mImageView;
     private LinearLayout mLayoutDefault;
 
-    private int mPosition = 0;
+    private int mPosition;
 
     private static List<Task> mTaskList = new ArrayList<>();
     private TaskRepository mRepository;
     private TaskAdapter mTaskAdapter;
 
-    public TaskListFragment(List<Task> tasks, int position) {
-        mTaskList = tasks;
-        if (tasks.size() == 0)
-            mPosition = position;
-        mRepository = TaskRepository.getInstance(mPosition);
+    public TaskListFragment() {
         // Required empty public constructor
+    }
+
+    public TaskListFragment(List<Task> tasks){
+        mTaskList = tasks;
     }
 
     public List<Task> getTaskList() {
@@ -51,8 +52,11 @@ public class TaskListFragment extends Fragment {
     }
 
     public static TaskListFragment newInstance(List<Task> tasks, int position) {
-        TaskListFragment fragment = new TaskListFragment(tasks, position);
+        TaskListFragment fragment = new TaskListFragment(tasks);
         Bundle args = new Bundle();
+        args.putInt(TASK_LIST_POSITION, position);
+      //  mTaskList = tasks;
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,6 +65,10 @@ public class TaskListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (mTaskList.size() == 0)
+            mPosition = getArguments().getInt(TASK_LIST_POSITION);
+
+        mRepository = TaskRepository.getInstance(mPosition);
     }
 
     @Override
@@ -113,6 +121,7 @@ public class TaskListFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                  //  mPosition = mRepository.getCurrentPosition();
                     ShowDetailFragment showDetailFragment =
                             ShowDetailFragment.newInstance(mTask.getId(), mPosition);
 
@@ -120,7 +129,9 @@ public class TaskListFragment extends Fragment {
                             TaskListFragment.this, REQUEST_CODE_SHOW_DETAIL);
 
                     showDetailFragment.show(
-                            getActivity().getSupportFragmentManager(),FRAGMENT_TAG_SHOW_DETAIL);
+                            getActivity().getSupportFragmentManager(), FRAGMENT_TAG_SHOW_DETAIL);
+
+
                 }
             });
 

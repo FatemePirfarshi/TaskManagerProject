@@ -14,7 +14,7 @@ public interface IRepository {
     int checkImageState(int position);
 
     void insertTask(Task task, int position);
-    void deleteTask(Task task);
+    void deleteTask(UUID taskId);
     void changeState(Task task,State state);
     void editTask(Task task);
     void updateTask(Task task);

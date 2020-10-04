@@ -3,9 +3,7 @@ package com.example.taskmanagerproject.controller;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.View;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,17 +13,14 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.taskmanagerproject.R;
-import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.repository.IRepository;
 import com.example.taskmanagerproject.repository.TaskRepository;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class TaskPagerActivity extends AppCompatActivity {
 

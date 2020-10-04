@@ -99,6 +99,7 @@ public class AddTaskFragment extends DialogFragment {
                             mTask.setTitle(mEditTextTitle.getText().toString());
                             mTask.setDiscription(mEditTextDescription.getText().toString());
                             mTask.setDone(mCheckBoxDone.isChecked());
+                          //  mTask.setDate(mButtonDate.getText().toString() + mButtonTime.getText().toString());
                             mRepository.insertTask(mTask, mCurrentPosition);
                             mRepository.updateTask(mTask);
 

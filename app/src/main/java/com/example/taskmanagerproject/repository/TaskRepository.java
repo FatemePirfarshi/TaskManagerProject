@@ -53,6 +53,7 @@ public class TaskRepository implements IRepository {
         for (int i = 0; i < arrayTaskList.length; i++) {
             arrayTaskList[i] = new ArrayList<>();
         }
+        mCurrentPosition = position;
     }
 
     @Override
@@ -84,12 +85,23 @@ public class TaskRepository implements IRepository {
         }
     }
 
+    public int getCurrentPosition() {
+        return mCurrentPosition;
+    }
+
+    public void setCurrentPosition(int currentPosition) {
+        mCurrentPosition = currentPosition;
+    }
+
     @Override
     public Task getTask(UUID id) {
-
-        for (Task t : getListWithPosition(mCurrentPosition)) {
-            if(t.getId().equals(id))
-                return t;
+        for (int i = 0; i < 3; i++) {
+            for (Task t :getListWithPosition(i)) {
+                if (t.getId().equals(id)) {
+                    mCurrentPosition = i;
+                    return t;
+                }
+            }
         }
         return null;
     }
@@ -100,8 +112,14 @@ public class TaskRepository implements IRepository {
     }
 
     @Override
-    public void deleteTask(Task task) {
+    public void deleteTask(UUID taskId) {
 
+        Task task = getTask(taskId);
+        getListWithPosition(mCurrentPosition).remove(task);
+//        for (Task t: getListWithPosition(mCurrentPosition)) {
+//            if(t.getId().equals(taskId))
+//                getListWithPosition(mCurrentPosition).remove(t);
+//        }
     }
 
     @Override
@@ -116,11 +134,11 @@ public class TaskRepository implements IRepository {
 
     @Override
     public void updateTask(Task task) {
-        Task findTask = getTask(task.getId());
+    //    Task findTask = getTask(task.getId());
 //        findTask.setTitle(task.getTitle());
 //        findTask.setDiscription(task.getDiscription());
 //        findTask.setDone(task.isDone());
-        findTask.setDate(task.getDate());
+    //    findTask.setDate(task.getDate());
     }
 
     @Override
