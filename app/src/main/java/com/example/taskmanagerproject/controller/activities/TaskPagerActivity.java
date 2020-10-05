@@ -1,4 +1,4 @@
-package com.example.taskmanagerproject.controller;
+package com.example.taskmanagerproject.controller.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.taskmanagerproject.R;
+import com.example.taskmanagerproject.controller.fragments.AddTaskFragment;
+import com.example.taskmanagerproject.controller.fragments.TaskListFragment;
 import com.example.taskmanagerproject.repository.IRepository;
 import com.example.taskmanagerproject.repository.TaskRepository;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -73,6 +75,7 @@ public class TaskPagerActivity extends AppCompatActivity {
         mFragmentList.add(TaskListFragment.newInstance(mRepository.getDoneTask(), 2));
 
         TaskPagerAdapter taskPagerAdapter = new TaskPagerAdapter(this);
+        mViewPager2.setOffscreenPageLimit(1);
         mViewPager2.setAdapter(taskPagerAdapter);
         mViewPager2.setCurrentItem(mCurrentPosition);
 

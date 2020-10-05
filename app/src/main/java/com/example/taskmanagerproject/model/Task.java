@@ -9,6 +9,7 @@ public class Task{
     private String mDiscription;
     private String mTitle;
     private Date mDate;
+    private long mTime;
     private State mState;
     private boolean mDone;
 
@@ -59,5 +60,13 @@ public class Task{
 
     public void setDone(boolean done) {
         mDone = done;
+    }
+
+    public long getTime() {
+        return mTime;
+    }
+
+    public void setTime(long time) {
+        mTime = time;
     }
 }

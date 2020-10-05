@@ -1,4 +1,4 @@
-package com.example.taskmanagerproject.controller;
+package com.example.taskmanagerproject.controller.fragments;
 
 import android.os.Bundle;
 
@@ -19,7 +19,6 @@ import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.repository.TaskRepository;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.example.taskmanagerproject.controller;
+package com.example.taskmanagerproject.controller.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -19,9 +19,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.taskmanagerproject.R;
+import com.example.taskmanagerproject.controller.activities.TaskPagerActivity;
 import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.repository.TaskRepository;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -99,7 +99,6 @@ public class AddTaskFragment extends DialogFragment {
                             mTask.setTitle(mEditTextTitle.getText().toString());
                             mTask.setDiscription(mEditTextDescription.getText().toString());
                             mTask.setDone(mCheckBoxDone.isChecked());
-                          //  mTask.setDate(mButtonDate.getText().toString() + mButtonTime.getText().toString());
                             mRepository.insertTask(mTask, mCurrentPosition);
                             mRepository.updateTask(mTask);
 
@@ -167,7 +166,6 @@ public class AddTaskFragment extends DialogFragment {
         if (requestCode == REQUEST_CODE_DATE_PiCKER) {
             Date userSelectedDate =
                     (Date) data.getSerializableExtra(DatePickerFragment.USER_SELECTED_DATE);
-
             updateTaskDate(userSelectedDate);
         }
 

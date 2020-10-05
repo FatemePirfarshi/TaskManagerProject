@@ -1,4 +1,4 @@
-package com.example.taskmanagerproject.controller;
+package com.example.taskmanagerproject.controller.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -63,9 +63,6 @@ public class TimePickerFragment extends DialogFragment {
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                          //Date date = extractTimeFromTimePicker();
-                         // date.setTime(mTimePicker.getHour());
-                       // mCalendar.setTimeInMillis(mTaskDate.getTime());
                           sendResult();
                     }
                 })
@@ -85,12 +82,6 @@ public class TimePickerFragment extends DialogFragment {
         mTimePicker.setMinute(minute);
     }
 
-//    private Date extractTimeFromTimePicker(){
-//
-//        mCalendar.setTimeInMillis(mTaskDate.getTime());
-//        return mCalendar.getTime();
-//    }
-
     private void sendResult(){
 
         int hour = mTimePicker.getCurrentHour();
@@ -101,7 +92,7 @@ public class TimePickerFragment extends DialogFragment {
 
         Fragment fragment = getTargetFragment();
         Intent intent = new Intent();
-        intent.putExtra(USER_SELECTED_TIME, mTaskDate);
+        intent.putExtra(USER_SELECTED_TIME, mTaskDate.getTime());
         fragment.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
     }
 }

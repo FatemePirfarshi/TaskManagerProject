@@ -12,6 +12,6 @@
     android:headerBackground="#FF754A"
     android:startYear="2000"
     android:yearListSelectorColor="#FF754A"
-    tools:context=".controller.DatePickerFragment">
+    tools:context=".controller.fragments.DatePickerFragment">
 
 </DatePicker>

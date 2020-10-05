@@ -1,8 +1,10 @@
-package com.example.taskmanagerproject.controller;
+package com.example.taskmanagerproject.controller.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +17,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.taskmanagerproject.R;
+import com.example.taskmanagerproject.controller.activities.TaskPagerActivity;
 import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.repository.TaskRepository;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -87,7 +91,7 @@ public class ShowDetailFragment extends DialogFragment {
                         TaskPagerActivity.start(getActivity(), mRepository.getCurrentPosition());
                     }
                 })
-                .setNeutralButton("Edit", null)
+                .setNeutralButton("STATES", null)
                 .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -144,5 +148,35 @@ public class ShowDetailFragment extends DialogFragment {
                         FRAGMENT_TAG_TIME_PICKER);
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        if (resultCode != Activity.RESULT_OK || data == null)
+            return;
+
+        if (requestCode == REQUEST_CODE_DATE_PiCKER) {
+            Date userSelectedDate =
+                    (Date) data.getSerializableExtra(DatePickerFragment.USER_SELECTED_DATE);
+            updateTaskDate(userSelectedDate);
+        }
+
+        if (requestCode == REQUEST_CODE_TIME_PICKER) {
+            Long userSelectedTime =
+                    data.getLongExtra(TimePickerFragment.USER_SELECTED_TIME, 0);
+            updateTaskTime(userSelectedTime);
+        }
+
+    }
+
+    public void updateTaskDate(Date userSelectedDate) {
+        mTask.setDate(userSelectedDate);
+        mButtonDate.setText(new SimpleDateFormat("yyyy.MM.dd").format(mTask.getDate()));
+    }
+
+    public void updateTaskTime(Long userSelectedTime) {
+        mTask.getDate().setTime(userSelectedTime);
+        mButtonTime.setText(new SimpleDateFormat("HH:mm:ss").format(mTask.getDate()));
     }
 }

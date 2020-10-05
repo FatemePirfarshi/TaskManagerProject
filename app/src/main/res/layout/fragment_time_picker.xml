@@ -6,6 +6,6 @@
     android:layout_height="match_parent"
     android:headerBackground="#FF754A"
     android:numbersSelectorColor="#FF754A"
-    tools:context=".controller.TimePickerFragment">
+    tools:context=".controller.fragments.TimePickerFragment">
 
 </TimePicker>
