@@ -11,6 +11,7 @@ import android.widget.Button;
 
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.controller.activities.LoginActivity;
+import com.example.taskmanagerproject.model.User;
 import com.google.android.material.textfield.TextInputLayout;
 
 
@@ -77,11 +78,35 @@ public class SignupFragment extends Fragment {
         mButtonSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LoginActivity.start(getActivity(),
-                        mEditTextSignUpUserName.getEditText().getText().toString(),
-                        mEditTextSignUpPassword.getEditText().getText().toString()
-                );
+                if(validateInput()) {
+                    String signUpUserName = mEditTextSignUpUserName.getEditText().getText().toString();
+                    String signUpPassWord = mEditTextSignUpPassword.getEditText().getText().toString();
+
+                    User user = new User();
+                    user.setUserName(signUpUserName);
+                    user.setPassWord(signUpPassWord);
+
+                    LoginActivity.start(getActivity(), signUpUserName, signUpPassWord);
+                }
             }
         });
+    }
+
+    private boolean validateInput() {
+        if (mEditTextSignUpUserName.getEditText().getText().toString().trim().isEmpty()) {
+            mEditTextSignUpUserName.setErrorEnabled(true);
+            mEditTextSignUpUserName.setError("Field cannot be empty!");
+            return false;
+        }
+        mEditTextSignUpUserName.setErrorEnabled(false);
+
+        if (mEditTextSignUpPassword.getEditText().getText().toString().trim().isEmpty()) {
+            mEditTextSignUpUserName.setErrorEnabled(false);
+            mEditTextSignUpPassword.setErrorEnabled(true);
+            mEditTextSignUpPassword.setError("Field cannot be empty!");
+            return false;
+        }
+        mEditTextSignUpPassword.setErrorEnabled(false);
+        return true;
     }
 }

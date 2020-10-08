@@ -50,6 +50,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/edittext_signup_username"
                 android:padding="10dp"
+                app:errorEnabled="true"
                 app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText

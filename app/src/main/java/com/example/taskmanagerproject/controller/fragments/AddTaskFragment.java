@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.controller.activities.TaskPagerActivity;
@@ -35,6 +36,8 @@ public class AddTaskFragment extends DialogFragment {
     public static final String FRAGMENT_TAG_DATE_PICKER = "datePicker";
     public static final String FRAGMENT_TAG_TIME_PICKER = "timePicker";
     public static final String ARGS_LIST_POSITOIN = "listPositoin";
+    public static final String EXTRA_NEW_TASK = "AddTaskFragment_extra_new_task";
+
 
     private EditText mEditTextTitle;
     private EditText mEditTextDescription;
@@ -99,10 +102,14 @@ public class AddTaskFragment extends DialogFragment {
                             mTask.setTitle(mEditTextTitle.getText().toString());
                             mTask.setDiscription(mEditTextDescription.getText().toString());
                             mTask.setDone(mCheckBoxDone.isChecked());
-                            mRepository.insertTask(mTask, mCurrentPosition);
+                            // mRepository.insertTask(mTask, mCurrentPosition);
                             mRepository.updateTask(mTask);
 
-                            TaskPagerActivity.start(getActivity(), mCurrentPosition);
+                            Intent intent = new Intent();
+                            intent.putExtra(EXTRA_NEW_TASK, mTask);
+
+                            getTargetFragment().onActivityResult(TaskPagerActivity.REQUEST_CODE_ADD_TASK, Activity.RESULT_OK, intent);
+                            dismiss();
                         }
                     }
                 })

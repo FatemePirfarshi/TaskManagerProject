@@ -8,11 +8,10 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.taskmanagerproject.R;
+import com.example.taskmanagerproject.controller.adapter.TaskPagerAdapter;
 import com.example.taskmanagerproject.controller.fragments.AddTaskFragment;
 import com.example.taskmanagerproject.controller.fragments.TaskListFragment;
 import com.example.taskmanagerproject.repository.IRepository;
@@ -26,12 +25,11 @@ import java.util.List;
 
 public class TaskPagerActivity extends AppCompatActivity {
 
-    public static final String EXTRA_TASK_ID = "com.example.taskmanagerproject.extraTaskId";
+   // public static final String EXTRA_TASK_ID = "com.example.taskmanagerproject.extraTaskId";
     public static final String FRAGMENT_TAG_ADD_TASK = "fragmentTagAddTask";
     public static final String EXTRA_CURRENT_POSITION =
             "com.example.taskmanagerproject.extraCurrentPosition";
-
-    private int mCurrentPosition;
+    public static final int REQUEST_CODE_ADD_TASK = 100;
 
     public static void start(Context context, int position) {
         Intent starter = new Intent(context, TaskPagerActivity.class);
@@ -40,11 +38,13 @@ public class TaskPagerActivity extends AppCompatActivity {
         context.startActivity(starter);
     }
 
+    private int mCurrentPosition;
     public static IRepository mRepository;
+    private FloatingActionButton mAddButton;
 
     private TabLayout mTabLayout;
     private ViewPager2 mViewPager2;
-    private FloatingActionButton mAddButton;
+    private TaskPagerAdapter mTaskPagerAdapter;
 
     private List<Fragment> mFragmentList = new ArrayList<>();
     private TaskListFragment mTaskListFragment;
@@ -70,13 +70,9 @@ public class TaskPagerActivity extends AppCompatActivity {
 
     private void initViews() {
 
-        mFragmentList.add(TaskListFragment.newInstance(mRepository.getTodoTask(), 0));
-        mFragmentList.add(TaskListFragment.newInstance(mRepository.getDoingTask(), 1));
-        mFragmentList.add(TaskListFragment.newInstance(mRepository.getDoneTask(), 2));
-
-        TaskPagerAdapter taskPagerAdapter = new TaskPagerAdapter(this);
+        mTaskPagerAdapter = new TaskPagerAdapter(this);
         mViewPager2.setOffscreenPageLimit(1);
-        mViewPager2.setAdapter(taskPagerAdapter);
+        mViewPager2.setAdapter(mTaskPagerAdapter);
         mViewPager2.setCurrentItem(mCurrentPosition);
 
         final String[] tabText = {"TODO", "DOING", "DONE"};
@@ -96,32 +92,10 @@ public class TaskPagerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mCurrentPosition = mTabLayout.getSelectedTabPosition();
-                AddTaskFragment.newInstance(mCurrentPosition)
-                        .show(getSupportFragmentManager(), FRAGMENT_TAG_ADD_TASK);
-
+                AddTaskFragment fragment = AddTaskFragment.newInstance(mCurrentPosition);
+                fragment.setTargetFragment(mTaskPagerAdapter.getFragments(mCurrentPosition), REQUEST_CODE_ADD_TASK);
+                fragment.show(getSupportFragmentManager(), FRAGMENT_TAG_ADD_TASK);
             }
         });
-    }
-
-    private class TaskPagerAdapter extends FragmentStateAdapter {
-
-        public TaskPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
-            super(fragmentActivity);
-        }
-
-        @NonNull
-        @Override
-        public Fragment createFragment(int position) {
-            mTaskListFragment =
-                    TaskListFragment.newInstance(
-                            mRepository.getListWithPosition(position), position);
-            return mTaskListFragment;
-        }
-
-        @Override
-        public int getItemCount() {
-            return mFragmentList.size();
-        }
-
     }
 }

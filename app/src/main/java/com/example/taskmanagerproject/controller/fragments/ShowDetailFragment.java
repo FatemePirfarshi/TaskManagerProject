@@ -31,6 +31,9 @@ public class ShowDetailFragment extends DialogFragment {
     public static final int REQUEST_CODE_DATE_PiCKER = 0;
     public static final int REQUEST_CODE_TIME_PICKER = 1;
 
+    public static final String EXTRA_CURRENT_POSITION = "ShowDetailFragment_extra_current_position";
+    public static final String EXTRA_NEW_TASK = "ShowDetailFragment_extra_new_task";
+
     public static final String FRAGMENT_TAG_DATE_PICKER = "datePicker";
     public static final String FRAGMENT_TAG_TIME_PICKER = "timePicker";
     public static final String ARGS_TASK_ID = "argsTaskId";
@@ -88,7 +91,11 @@ public class ShowDetailFragment extends DialogFragment {
                         mTask.setTitle(mEditTextTitle.getText().toString());
                         mTask.setDiscription(mEditTextDescription.getText().toString());
                         mTask.setDone(mCheckBoxDone.isChecked());
-                        TaskPagerActivity.start(getActivity(), mRepository.getCurrentPosition());
+                        Intent intent = new Intent();
+                        intent.putExtra(EXTRA_CURRENT_POSITION, mPosition);
+                        intent.putExtra(EXTRA_NEW_TASK, mTask);
+                        getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
+                        dismiss();
                     }
                 })
                 .setNeutralButton("STATES", null)

@@ -1,9 +1,10 @@
 package com.example.taskmanagerproject.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-public class Task{
+public class Task implements Serializable {
 
     private UUID mId;
     private String mDiscription;
@@ -68,5 +69,15 @@ public class Task{
 
     public void setTime(long time) {
         mTime = time;
+    }
+
+    public void update(Task task) {
+        mId = task.mId;
+        mDate = task.mDate;
+        mDiscription = task.mDiscription;
+        mTime = task.mTime;
+        mState = task.mState;
+        mTitle = task.mTitle;
+        mDone = task.mDone;
     }
 }

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="#E6E5D8">
+    android:background="#FDDEC7">
 
     <TextView
         android:id="@+id/task_title_start"

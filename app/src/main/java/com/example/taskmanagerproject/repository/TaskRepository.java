@@ -134,11 +134,12 @@ public class TaskRepository implements IRepository {
 
     @Override
     public void updateTask(Task task) {
-    //    Task findTask = getTask(task.getId());
+//        Task addedTask = getTask(id);
+//        Task findTask = getTask(task.getId());
 //        findTask.setTitle(task.getTitle());
 //        findTask.setDiscription(task.getDiscription());
 //        findTask.setDone(task.isDone());
-    //    findTask.setDate(task.getDate());
+//       findTask.setDate(task.getDate());
     }
 
     @Override
