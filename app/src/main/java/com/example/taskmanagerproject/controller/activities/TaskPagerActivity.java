@@ -3,6 +3,7 @@ package com.example.taskmanagerproject.controller.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import com.example.taskmanagerproject.controller.adapter.TaskPagerAdapter;
 import com.example.taskmanagerproject.controller.fragments.AddTaskFragment;
 import com.example.taskmanagerproject.controller.fragments.TaskListFragment;
 import com.example.taskmanagerproject.repository.IRepository;
+import com.example.taskmanagerproject.repository.TaskDBRepository;
 import com.example.taskmanagerproject.repository.TaskRepository;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -55,7 +57,8 @@ public class TaskPagerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mCurrentPosition = getIntent().getIntExtra(EXTRA_CURRENT_POSITION, 0);
-        mRepository = TaskRepository.getInstance(mCurrentPosition);
+      //  mRepository = TaskRepository.getInstance(mCurrentPosition);
+        mRepository = TaskDBRepository.getInstance(this, mCurrentPosition);
 
         findViews();
         initViews();
@@ -70,7 +73,7 @@ public class TaskPagerActivity extends AppCompatActivity {
 
     private void initViews() {
 
-        mTaskPagerAdapter = new TaskPagerAdapter(this);
+        mTaskPagerAdapter = new TaskPagerAdapter(this, this);
         mViewPager2.setOffscreenPageLimit(1);
         mViewPager2.setAdapter(mTaskPagerAdapter);
         mViewPager2.setCurrentItem(mCurrentPosition);
@@ -93,9 +96,16 @@ public class TaskPagerActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mCurrentPosition = mTabLayout.getSelectedTabPosition();
                 AddTaskFragment fragment = AddTaskFragment.newInstance(mCurrentPosition);
-                fragment.setTargetFragment(mTaskPagerAdapter.getFragments(mCurrentPosition), REQUEST_CODE_ADD_TASK);
+                fragment.setTargetFragment(
+                        mTaskPagerAdapter.getFragments(mCurrentPosition), REQUEST_CODE_ADD_TASK);
                 fragment.show(getSupportFragmentManager(), FRAGMENT_TAG_ADD_TASK);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_task_list, menu);
+        return true;
     }
 }

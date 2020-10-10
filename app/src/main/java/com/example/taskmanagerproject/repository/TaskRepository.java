@@ -18,29 +18,8 @@ public class TaskRepository implements IRepository {
 
     private int mCurrentPosition;
 
-    private int mImageRes;
-
-    public int getImageRes() {
-        return mImageRes;
-    }
-
-    public void setImageRes(int imageRes) {
-        mImageRes = imageRes;
-    }
-
+    private State mState;
     private List[] arrayTaskList = {mTodoTasks, mDoingTasks, mDoneTasks};
-
-    public void setTodoTasks(List<Task> todoTasks) {
-        mTodoTasks = todoTasks;
-    }
-
-    public void setDoingTask(List<Task> doingTask) {
-        mDoingTasks = doingTask;
-    }
-
-    public void setDoneTask(List<Task> doneTask) {
-        mDoneTasks = doneTask;
-    }
 
     public static TaskRepository getInstance(int position) {
         if (sInstance == null)
@@ -56,31 +35,34 @@ public class TaskRepository implements IRepository {
         mCurrentPosition = position;
     }
 
-    @Override
     public List<Task> getTodoTask() {
         return arrayTaskList[0];
     }
 
-    @Override
     public List<Task> getDoingTask() {
         return arrayTaskList[1];
     }
 
-    @Override
     public List<Task> getDoneTask() {
         return arrayTaskList[2];
     }
 
-    @Override
+    //    public List<Task> getTaskList(){
+//       return getListWithPosition(mCurrentPosition);
+//    }
+    //@Override
     public List<Task> getListWithPosition(int position) {
         mCurrentPosition = position;
 
         switch (position) {
             case 0:
+                mState = State.TODO;
                 return getTodoTask();
             case 1:
+                mState = State.DOING;
                 return getDoingTask();
             default:
+                mState = State.DONE;
                 return getDoneTask();
         }
     }
@@ -89,14 +71,15 @@ public class TaskRepository implements IRepository {
         return mCurrentPosition;
     }
 
-    public void setCurrentPosition(int currentPosition) {
-        mCurrentPosition = currentPosition;
+    @Override
+    public List<Task> getTasks() {
+        return null;
     }
 
     @Override
     public Task getTask(UUID id) {
         for (int i = 0; i < 3; i++) {
-            for (Task t :getListWithPosition(i)) {
+            for (Task t : getListWithPosition(i)) {
                 if (t.getId().equals(id)) {
                     mCurrentPosition = i;
                     return t;
@@ -107,28 +90,17 @@ public class TaskRepository implements IRepository {
     }
 
     @Override
-    public void insertTask(Task task, int position) {
-        arrayTaskList[position].add(task);
+    public void insertTask(Task task) {
+        arrayTaskList[mCurrentPosition].add(task);
     }
 
     @Override
-    public void deleteTask(UUID taskId) {
-
-        Task task = getTask(taskId);
+    public void deleteTask(Task task) {
+        //Task task = getTask(task.getId());
         getListWithPosition(mCurrentPosition).remove(task);
-//        for (Task t: getListWithPosition(mCurrentPosition)) {
-//            if(t.getId().equals(taskId))
-//                getListWithPosition(mCurrentPosition).remove(t);
-//        }
     }
 
-    @Override
     public void changeState(Task task, State state) {
-
-    }
-
-    @Override
-    public void editTask(Task task) {
 
     }
 
@@ -142,7 +114,6 @@ public class TaskRepository implements IRepository {
 //       findTask.setDate(task.getDate());
     }
 
-    @Override
     public int checkImageState(int position) {
         switch (position) {
             case 0:

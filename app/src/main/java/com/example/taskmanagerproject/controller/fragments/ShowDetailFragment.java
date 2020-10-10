@@ -17,9 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.taskmanagerproject.R;
-import com.example.taskmanagerproject.controller.activities.TaskPagerActivity;
 import com.example.taskmanagerproject.model.Task;
-import com.example.taskmanagerproject.repository.TaskRepository;
+import com.example.taskmanagerproject.repository.TaskDBRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -49,7 +48,7 @@ public class ShowDetailFragment extends DialogFragment {
     private List<Task> mTasks;
     private UUID mTaskId;
     private int mPosition;
-    private TaskRepository mRepository;
+    private TaskDBRepository mRepository;
 
     public ShowDetailFragment() {
         // Required empty public constructor
@@ -70,7 +69,7 @@ public class ShowDetailFragment extends DialogFragment {
 
         mTaskId = (UUID) getArguments().getSerializable(ARGS_TASK_ID);
         mPosition = getArguments().getInt(ARGS_TASK_POSITION);
-        mRepository = TaskRepository.getInstance(mPosition);
+        mRepository = TaskDBRepository.getInstance(getActivity(), mPosition);
     }
 
     @NonNull
@@ -102,8 +101,9 @@ public class ShowDetailFragment extends DialogFragment {
                 .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        mRepository.deleteTask(mTask.getId());
-                        TaskPagerActivity.start(getActivity(), mRepository.getCurrentPosition());
+                        mRepository.deleteTask(mTask);
+                        dismiss();
+                        //TaskPagerActivity.start(getActivity(), mRepository.getCurrentPosition());
                     }
                 }).create();
     }
@@ -118,7 +118,6 @@ public class ShowDetailFragment extends DialogFragment {
 
     private void initViews() {
         mTask = mRepository.getTask(mTaskId);
-
         mEditTextTitle.setText(mTask.getTitle());
         mEditTextDescription.setText(mTask.getDiscription());
         mCheckBoxDone.setChecked(mTask.isDone());

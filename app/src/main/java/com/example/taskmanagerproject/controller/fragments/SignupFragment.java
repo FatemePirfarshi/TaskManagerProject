@@ -1,5 +1,6 @@
 package com.example.taskmanagerproject.controller.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,6 +13,8 @@ import android.widget.Button;
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.controller.activities.LoginActivity;
 import com.example.taskmanagerproject.model.User;
+import com.example.taskmanagerproject.repository.UserDBRepository;
+import com.example.taskmanagerproject.repository.UserIRepository;
 import com.google.android.material.textfield.TextInputLayout;
 
 
@@ -22,6 +25,7 @@ public class SignupFragment extends Fragment {
     private TextInputLayout mEditTextSignUpUserName;
     private TextInputLayout mEditTextSignUpPassword;
     private Button mButtonSignup;
+    private UserIRepository mRepository;
 
     String userName;
     String passWord;
@@ -48,6 +52,7 @@ public class SignupFragment extends Fragment {
         userName = getArguments().getString(ARGS_USER_NAME);
         passWord = getArguments().getString(ARGS_PASS_WORD);
 
+        mRepository = UserDBRepository.getInstance(getActivity());
     }
 
     @Override
@@ -86,7 +91,9 @@ public class SignupFragment extends Fragment {
                     user.setUserName(signUpUserName);
                     user.setPassWord(signUpPassWord);
 
+                    mRepository.insertUser(user);
                     LoginActivity.start(getActivity(), signUpUserName, signUpPassWord);
+                    getActivity().finish();
                 }
             }
         });

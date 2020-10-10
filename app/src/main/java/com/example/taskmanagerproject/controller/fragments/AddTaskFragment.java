@@ -17,12 +17,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.controller.activities.TaskPagerActivity;
 import com.example.taskmanagerproject.model.Task;
-import com.example.taskmanagerproject.repository.TaskRepository;
+import com.example.taskmanagerproject.repository.TaskDBRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,7 +46,7 @@ public class AddTaskFragment extends DialogFragment {
 
     private LinearLayout mRootLinearLayout;
 
-    private TaskRepository mRepository;
+    private TaskDBRepository mRepository;
     private List<Task> mCurrentList;
     private int mCurrentPosition;
 
@@ -73,7 +72,7 @@ public class AddTaskFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCurrentPosition = getArguments().getInt(ARGS_LIST_POSITOIN);
-        mRepository = TaskRepository.getInstance(mCurrentPosition);
+        mRepository = TaskDBRepository.getInstance(getActivity(), mCurrentPosition);
         mCurrentList = mRepository.getListWithPosition(mCurrentPosition);
     }
 
@@ -102,11 +101,14 @@ public class AddTaskFragment extends DialogFragment {
                             mTask.setTitle(mEditTextTitle.getText().toString());
                             mTask.setDiscription(mEditTextDescription.getText().toString());
                             mTask.setDone(mCheckBoxDone.isChecked());
+                            mTask.setPosition(mCurrentPosition);
                             // mRepository.insertTask(mTask, mCurrentPosition);
-                            mRepository.updateTask(mTask);
+                           // mRepository.updateTask(mTask);
+                            mRepository.insertTask(mTask);
+                            mRepository.updateLists(mTask);
 
                             Intent intent = new Intent();
-                            intent.putExtra(EXTRA_NEW_TASK, mTask);
+                            //intent.putExtra(EXTRA_NEW_TASK, mTask);
 
                             getTargetFragment().onActivityResult(TaskPagerActivity.REQUEST_CODE_ADD_TASK, Activity.RESULT_OK, intent);
                             dismiss();

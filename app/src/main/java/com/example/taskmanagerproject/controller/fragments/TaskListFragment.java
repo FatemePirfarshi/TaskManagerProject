@@ -1,6 +1,7 @@
 package com.example.taskmanagerproject.controller.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.controller.activities.TaskPagerActivity;
 import com.example.taskmanagerproject.model.Task;
-import com.example.taskmanagerproject.repository.TaskRepository;
+import com.example.taskmanagerproject.repository.TaskDBRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class TaskListFragment extends Fragment {
     private int mPosition;
 
     private List<Task> mTaskList = new ArrayList<>();
-    private TaskRepository mRepository;
+    private TaskDBRepository mRepository;
     private TaskAdapter mTaskAdapter;
 
     public TaskListFragment() {
@@ -66,7 +67,7 @@ public class TaskListFragment extends Fragment {
         if (mTaskList.size() == 0)
             mPosition = getArguments().getInt(TASK_LIST_POSITION);
 
-        mRepository = TaskRepository.getInstance(mPosition);
+        mRepository = TaskDBRepository.getInstance(getActivity(), mPosition);
     }
 
     @Override
@@ -92,15 +93,25 @@ public class TaskListFragment extends Fragment {
         mRecyclerView.setAdapter(new TaskAdapter(mTaskList));
         mTaskAdapter = new TaskAdapter(mTaskList);
         setEmptyList();
-        mTaskAdapter.notifyItemInserted(mTaskList.size());
+        mTaskAdapter.notifyDataSetChanged();
+        // mTaskAdapter.notifyItemInserted(mTaskList.size());
 
         int imageRes = mRepository.checkImageState(mPosition);
 
         mImageView.setImageResource(imageRes);
     }
-    private void updateUI(Task task) {
-        mTaskList.add(task);
-        mTaskAdapter.notifyItemInserted(mTaskList.size() - 1);
+
+    private void updateUI() {
+
+        //    mTaskList.add(task);
+        // mTaskAdapter = new TaskAdapter(mTaskList);
+        if (mTaskAdapter == null) {
+            mTaskAdapter = new TaskAdapter(mTaskList);
+        } else {
+            mTaskAdapter.setTasks(mTaskList);
+            //  mTaskAdapter.notifyItemInserted(mTaskList.size() - 1);
+            mTaskAdapter.notifyDataSetChanged();
+        }
         setEmptyList();
     }
 
@@ -114,8 +125,9 @@ public class TaskListFragment extends Fragment {
     private void setEmptyList() {
         if (mTaskList.size() != 0)
             mLayoutDefault.setVisibility(View.GONE);
-        else
+        else if (mLayoutDefault != null) {
             mLayoutDefault.setVisibility(View.VISIBLE);
+        }
     }
 
     class TaskHolder extends RecyclerView.ViewHolder {
@@ -202,8 +214,11 @@ public class TaskListFragment extends Fragment {
             return;
 
         if (requestCode == TaskPagerActivity.REQUEST_CODE_ADD_TASK) {
-            Task newTask = (Task) data.getSerializableExtra(AddTaskFragment.EXTRA_NEW_TASK);
-            updateUI(newTask);
+           // Task newTask = (Task) data.getSerializableExtra(AddTaskFragment.EXTRA_NEW_TASK);
+//            mRepository.insertTask(newTask);
+//            mRepository.updateLists(newTask);
+            mTaskList = mRepository.getListWithPosition(mPosition);
+            updateUI();
 
         } else if (requestCode == REQUEST_CODE_SHOW_DETAIL) {
             int position = data.getIntExtra(ShowDetailFragment.EXTRA_CURRENT_POSITION, 0);

@@ -88,9 +88,10 @@ public class LoginFragment extends Fragment {
                             "please click SIGN UP!!", Snackbar.LENGTH_LONG).show();
 
                 else if(mEditTextUserName.getEditText().getText().toString().equals(signupUsername) &&
-                        mEditTextPassword.getEditText().getText().toString().equals(signupPassword))
-                TaskPagerActivity.start(getActivity(), 0);
-
+                        mEditTextPassword.getEditText().getText().toString().equals(signupPassword)) {
+                    TaskPagerActivity.start(getActivity(), 0);
+                    getActivity().finish();
+                }
                 else
                     Snackbar.make(mFrameLayout,
                             "Your information are not valid!!", Snackbar.LENGTH_LONG).show();
