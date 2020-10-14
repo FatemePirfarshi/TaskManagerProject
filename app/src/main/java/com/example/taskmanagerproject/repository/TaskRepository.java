@@ -72,6 +72,11 @@ public class TaskRepository implements IRepository {
     }
 
     @Override
+    public List<Task> getTaskStates(int position) {
+        return null;
+    }
+
+    @Override
     public List<Task> getTasks() {
         return null;
     }

@@ -6,11 +6,9 @@ import androidx.room.Room;
 
 import com.example.taskmanagerproject.controller.database.TaskDatabase;
 import com.example.taskmanagerproject.controller.database.UserDatabaseDAO;
-import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.model.User;
 import com.example.taskmanagerproject.model.UserWithTasks;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,7 +47,7 @@ public class UserDBRepository implements UserDatabaseDAO {
 
     @Override
     public List<UserWithTasks> getUsersWithTasks() {
-        return new ArrayList<>();
+        return mUserDAO.getUsersWithTasks();
     }
 
     @Override

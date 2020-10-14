@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -31,6 +34,8 @@ public class TaskListFragment extends Fragment {
     public static final int REQUEST_CODE_SHOW_DETAIL = 0;
     public static final String FRAGMENT_TAG_SHOW_DETAIL = "ShowDetail";
     public static final String TASK_LIST_POSITION = "taskListPosition";
+    public static final int REQUEST_CODE_DELETE_ALL = 1;
+    public static final String FRAGMENT_TAG_DELETE_ALL = "deleteAll";
 
     private RecyclerView mRecyclerView;
     private ImageView mImageView;
@@ -64,10 +69,16 @@ public class TaskListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setHasOptionsMenu(true);
         if (mTaskList.size() == 0)
             mPosition = getArguments().getInt(TASK_LIST_POSITION);
 
         mRepository = TaskDBRepository.getInstance(getActivity(), mPosition);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -81,6 +92,31 @@ public class TaskListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_task_list, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_log_out:
+                //todo
+                return true;
+            case R.id.item_delete_all:
+
+                DeleteAllFragment deleteAllFragment = DeleteAllFragment.newInstance(mPosition);
+                deleteAllFragment.setTargetFragment(
+                        TaskListFragment.this, REQUEST_CODE_DELETE_ALL);
+                deleteAllFragment.show(
+                        getActivity().getSupportFragmentManager(), FRAGMENT_TAG_DELETE_ALL);
+                updateUI();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void findViews(View view) {
         mRecyclerView = view.findViewById(R.id.recycler_view_task_list);
         mImageView = view.findViewById(R.id.imgview_task_list);
@@ -89,43 +125,43 @@ public class TaskListFragment extends Fragment {
 
     private void initViews() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        mRecyclerView.setAdapter(new TaskAdapter(mTaskList));
-        mTaskAdapter = new TaskAdapter(mTaskList);
+        mImageView.setImageResource(mRepository.checkImageState(mPosition));
+        updateUI();
         setEmptyList();
-        mTaskAdapter.notifyDataSetChanged();
-        // mTaskAdapter.notifyItemInserted(mTaskList.size());
-
-        int imageRes = mRepository.checkImageState(mPosition);
-
-        mImageView.setImageResource(imageRes);
     }
 
     private void updateUI() {
-
-        //    mTaskList.add(task);
-        // mTaskAdapter = new TaskAdapter(mTaskList);
+//  mTaskAdapter.notifyItemInserted(mTaskList.size() - 1);
         if (mTaskAdapter == null) {
             mTaskAdapter = new TaskAdapter(mTaskList);
+            mRecyclerView.setAdapter(mTaskAdapter);
         } else {
             mTaskAdapter.setTasks(mTaskList);
-            //  mTaskAdapter.notifyItemInserted(mTaskList.size() - 1);
             mTaskAdapter.notifyDataSetChanged();
         }
         setEmptyList();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
     private void updateUI(Task task, int position) {
-        mTaskList = mRepository.getListWithPosition(mPosition);
+        mRepository.updateTask(task);
+        mTaskList = mRepository.getListWithPosition(position);
         mTaskAdapter.setTasks(mTaskList);
         mTaskAdapter.notifyDataSetChanged();
         setEmptyList();
     }
 
     private void setEmptyList() {
+
         if (mTaskList.size() != 0)
             mLayoutDefault.setVisibility(View.GONE);
         else if (mLayoutDefault != null) {
+            mImageView.setImageResource(mRepository.checkImageState(mPosition));
             mLayoutDefault.setVisibility(View.VISIBLE);
         }
     }
@@ -214,16 +250,31 @@ public class TaskListFragment extends Fragment {
             return;
 
         if (requestCode == TaskPagerActivity.REQUEST_CODE_ADD_TASK) {
-           // Task newTask = (Task) data.getSerializableExtra(AddTaskFragment.EXTRA_NEW_TASK);
-//            mRepository.insertTask(newTask);
-//            mRepository.updateLists(newTask);
+            mPosition = data.getIntExtra(AddTaskFragment.EXTRA_NEW_TASK_position, 0);
             mTaskList = mRepository.getListWithPosition(mPosition);
             updateUI();
 
         } else if (requestCode == REQUEST_CODE_SHOW_DETAIL) {
-            int position = data.getIntExtra(ShowDetailFragment.EXTRA_CURRENT_POSITION, 0);
+            int position;
+            //  int position = data.getIntExtra(ShowDetailFragment.EXTRA_CURRENT_POSITION, 0);
             Task newTask = (Task) data.getSerializableExtra(ShowDetailFragment.EXTRA_NEW_TASK);
-            updateUI(newTask, position);
+
+            if (data.getBooleanExtra(ShowDetailFragment.EXTRA_EDIT_TASK, false))
+                position = newTask.getPosition();
+            else
+                position = data.getIntExtra(ShowDetailFragment.EXTRA_TASK_EDITED_CURRENT_POSITION, 0);
+
+            if (newTask != null) {
+                updateUI(newTask, position);
+                mPosition = position;
+            } else {
+                int deletedTaskPosition = data.getIntExtra(
+                        ShowDetailFragment.EXTRA_TASK_DELETED_CURRENT_POSITION, 0);
+                mTaskList = mRepository.getListWithPosition(deletedTaskPosition);
+                int imageRes = mRepository.checkImageState(deletedTaskPosition);
+                mImageView.setImageResource(imageRes);
+                updateUI();
+            }
         }
     }
 }

@@ -7,11 +7,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.taskmanagerproject.controller.activities.TaskPagerActivity;
 import com.example.taskmanagerproject.controller.fragments.TaskListFragment;
-import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.repository.TaskDBRepository;
-import com.example.taskmanagerproject.repository.TaskRepository;
 
 import java.util.ArrayList;
 import java.util.List;

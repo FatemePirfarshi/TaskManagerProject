@@ -2,6 +2,7 @@ package com.example.taskmanagerproject.controller.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -20,6 +21,9 @@ public class LoginFragment extends Fragment {
 
     public static final String ARGS_SIGNUP_USER_NAME = "signupUserName";
     public static final String ARGS_SIGNUP_PASS_WORD = "signupPassWord";
+    public static final String BUNDLE_LOGIN_USERNAME = "loginUsername";
+    public static final String BUNDLE_LOGIN_PASSWORD = "loginPassword";
+
     private TextInputLayout mEditTextUserName;
     private TextInputLayout mEditTextPassword;
     private Button mButtonLogIn;
@@ -57,10 +61,21 @@ public class LoginFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
         findViews(view);
+        if (savedInstanceState != null) {
+            signupUsername = savedInstanceState.getString(BUNDLE_LOGIN_USERNAME);
+            signupPassword = savedInstanceState.getString(BUNDLE_LOGIN_PASSWORD);
+        }
         initViews();
         setListeners();
 
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(BUNDLE_LOGIN_USERNAME, mEditTextUserName.getEditText().getText().toString());
+        outState.putString(BUNDLE_LOGIN_PASSWORD, mEditTextPassword.getEditText().getText().toString());
     }
 
     private void findViews(View view) {

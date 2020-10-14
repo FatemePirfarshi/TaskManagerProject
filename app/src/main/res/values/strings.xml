@@ -16,5 +16,11 @@
     <string name="empty_edittext_username">The item username cannot be empty</string>
     <string name="invalid_info">Your information is not valid</string>
     <string name="valid_info">You are LOG IN now</string>
+    <string name="button_todo">TODO</string>
+    <string name="button_doing">DOING</string>
+    <string name="button_done">DONE</string>
+    <string name="item_log_out">LogOut</string>
+    <string name="item_delete_all">DeleteAll</string>
+    <string name="item_search">Search</string>
 
 </resources>

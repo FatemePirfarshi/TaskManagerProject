@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioGroup
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/radiogp_states"
+    android:layout_gravity="center"
+    tools:context=".controller.fragments.ChangeStateFragment">
+
+        <RadioButton
+            android:id="@+id/btn_todo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_todo"
+            app:buttonTint="#FF754A" />
+
+        <RadioButton
+            android:id="@+id/btn_doing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_doing"
+            app:buttonTint="#FF754A" />
+
+        <RadioButton
+            android:id="@+id/btn_done"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_done"
+            app:buttonTint="#FF754A" />
+
+</RadioGroup>

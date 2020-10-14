@@ -20,14 +20,14 @@ public class TaskDBRepository implements TaskDatabaseDAO {
     private TaskDatabaseDAO mTaskDAO;
     private Context mContext;
 
-    public static TaskDBRepository getInstance(Context context, int position){
-        if(sInstance == null)
+    public static TaskDBRepository getInstance(Context context, int position) {
+        if (sInstance == null)
             sInstance = new TaskDBRepository(context, position);
 
         return sInstance;
     }
 
-    private TaskDBRepository(Context context, int position){
+    private TaskDBRepository(Context context, int position) {
         mContext = context.getApplicationContext();
 
         TaskDatabase taskDatabase = Room.databaseBuilder(
@@ -47,30 +47,9 @@ public class TaskDBRepository implements TaskDatabaseDAO {
 
     private State mState;
 
-    public List<Task> getTodoTask() {
-
-        for (Task t: mTaskListMain) {
-            if(t.getPosition() == 0)
-                mTodoTasks.add(t);
-        }
-        return mTodoTasks;
-    }
-
-    public List<Task> getDoingTask() {
-
-        for (Task t: mTaskListMain) {
-            if(t.getPosition() == 1)
-                mTodoTasks.add(t);
-        }
-        return mDoingTasks;
-    }
-
-    public List<Task> getDoneTask() {
-        for (Task t: mTaskListMain) {
-            if(t.getPosition() == 2)
-                mTodoTasks.add(t);
-        }
-        return mDoneTasks;
+    @Override
+    public List<Task> getTaskStates(int position) {
+        return mTaskDAO.getTaskStates(position);
     }
 
     public List<Task> getListWithPosition(int position) {
@@ -79,19 +58,18 @@ public class TaskDBRepository implements TaskDatabaseDAO {
         switch (position) {
             case 0:
                 mState = State.TODO;
-                return getTodoTask();
+                return getTaskStates(0);
             case 1:
                 mState = State.DOING;
-                return getDoingTask();
+                return getTaskStates(1);
             default:
                 mState = State.DONE;
-                return getDoneTask();
+                return getTaskStates(2);
         }
     }
 
     @Override
     public List<Task> getTasks() {
-//        mTaskListMain = mTaskDAO.getTasks();
         return mTaskDAO.getTasks();
     }
 
@@ -114,25 +92,6 @@ public class TaskDBRepository implements TaskDatabaseDAO {
     public void updateTask(Task task) {
         mTaskDAO.updateTask(task);
     }
-//    @Override
-//    public void deleteTask(Task task) {
-//        getListWithPosition(mCurrentPosition).remove(task);
-//       // mTaskDAO.deleteTask(task);
-//    }
-
-//
-//    @Override
-//    public Task getTask(UUID id) {
-//        for (int i = 0; i < 3; i++) {
-//            for (Task t : getListWithPosition(i)) {
-//                if (t.getId().equals(id)) {
-//                    mCurrentPosition = i;
-//                    return t;
-//                }
-//            }
-//        }
-//        return null;
-//    }
 
     public int checkImageState(int position) {
         switch (position) {
@@ -145,23 +104,23 @@ public class TaskDBRepository implements TaskDatabaseDAO {
         }
     }
 
-    public int getCurrentPosition() {
-        return mCurrentPosition;
-    }
-
-    public void updateLists(Task newTask){
-        switch (newTask.getPosition()){
+    public void updateLists(Task newTask) {
+        switch (newTask.getPosition()) {
             case 0:
-                mTodoTasks.add(newTask);
+                mTodoTasks.add(mTaskDAO.getTask(newTask.getId()));
                 break;
             case 1:
-                mDoingTasks.add(newTask);
+                mDoingTasks.add(mTaskDAO.getTask(newTask.getId()));
                 break;
             case 2:
-                mDoneTasks.add(newTask);
+                mDoneTasks.add(mTaskDAO.getTask(newTask.getId()));
                 break;
         }
     }
 
-
+    public void deleteAll(){
+        for (int i = 0; i < mTaskListMain.size(); i++) {
+            mTaskDAO.deleteTask(mTaskListMain.get(i));
+        }
+    }
 }

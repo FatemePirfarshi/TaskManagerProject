@@ -17,7 +17,6 @@ import com.example.taskmanagerproject.controller.fragments.AddTaskFragment;
 import com.example.taskmanagerproject.controller.fragments.TaskListFragment;
 import com.example.taskmanagerproject.repository.IRepository;
 import com.example.taskmanagerproject.repository.TaskDBRepository;
-import com.example.taskmanagerproject.repository.TaskRepository;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -27,7 +26,6 @@ import java.util.List;
 
 public class TaskPagerActivity extends AppCompatActivity {
 
-   // public static final String EXTRA_TASK_ID = "com.example.taskmanagerproject.extraTaskId";
     public static final String FRAGMENT_TAG_ADD_TASK = "fragmentTagAddTask";
     public static final String EXTRA_CURRENT_POSITION =
             "com.example.taskmanagerproject.extraCurrentPosition";
@@ -35,7 +33,6 @@ public class TaskPagerActivity extends AppCompatActivity {
 
     public static void start(Context context, int position) {
         Intent starter = new Intent(context, TaskPagerActivity.class);
-        //starter.putExtra(EXTRA_LIST_OF_TASK, (Serializable) tasks);
         starter.putExtra(EXTRA_CURRENT_POSITION, position);
         context.startActivity(starter);
     }
@@ -57,7 +54,6 @@ public class TaskPagerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mCurrentPosition = getIntent().getIntExtra(EXTRA_CURRENT_POSITION, 0);
-      //  mRepository = TaskRepository.getInstance(mCurrentPosition);
         mRepository = TaskDBRepository.getInstance(this, mCurrentPosition);
 
         findViews();
@@ -74,7 +70,7 @@ public class TaskPagerActivity extends AppCompatActivity {
     private void initViews() {
 
         mTaskPagerAdapter = new TaskPagerAdapter(this, this);
-        mViewPager2.setOffscreenPageLimit(1);
+       // mViewPager2.setOffscreenPageLimit(0);
         mViewPager2.setAdapter(mTaskPagerAdapter);
         mViewPager2.setCurrentItem(mCurrentPosition);
 

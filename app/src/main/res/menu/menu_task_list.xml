@@ -3,17 +3,19 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/item_log_out"
         android:icon="@drawable/ic_profile"
-        android:title="Item"
+        android:title="@string/item_log_out"
         app:showAsAction="ifRoom|withText" />
     <item
+        android:id="@+id/item_delete_all"
         android:icon="@drawable/ic_remove"
-        android:title="Item"
+        android:title="@string/item_delete_all"
         app:showAsAction="ifRoom|withText" />
     <item
         android:id="@+id/app_bar_search"
         android:icon="@drawable/ic_search_black_24dp"
-        android:title="Search"
+        android:title="@string/item_search"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="ifRoom|withText" />
 </menu>

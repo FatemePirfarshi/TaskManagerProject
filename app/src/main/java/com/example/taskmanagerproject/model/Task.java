@@ -2,13 +2,22 @@ package com.example.taskmanagerproject.model;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-@Entity(tableName = "taskTable")
+import static androidx.room.ForeignKey.CASCADE;
+
+@Entity(tableName = "taskTable"
+//        ,foreignKeys = @ForeignKey(entity = User.class,
+//        parentColumns = "userId",
+//        childColumns = "userCreatedId",
+//        onDelete = CASCADE)
+)
+
 public class Task implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
@@ -40,14 +49,14 @@ public class Task implements Serializable {
     private int mPosition;
 
     @ColumnInfo(name = "userCreatorId")
-    private long mUserId;
+    private long mUserCreatorId;
 
-    public long getUserId() {
-        return mUserId;
+    public long getUserCreatorId() {
+        return mUserCreatorId;
     }
 
-    public void setUserId(long userId) {
-        mUserId = userId;
+    public void setUserCreatorId(long userCreatorId) {
+        mUserCreatorId = userCreatorId;
     }
 
     //    public Task(){

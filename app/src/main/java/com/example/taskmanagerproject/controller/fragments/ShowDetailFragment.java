@@ -30,13 +30,24 @@ public class ShowDetailFragment extends DialogFragment {
     public static final int REQUEST_CODE_DATE_PiCKER = 0;
     public static final int REQUEST_CODE_TIME_PICKER = 1;
 
-    public static final String EXTRA_CURRENT_POSITION = "ShowDetailFragment_extra_current_position";
-    public static final String EXTRA_NEW_TASK = "ShowDetailFragment_extra_new_task";
+    public static final String EXTRA_EDIT_TASK =
+            "com.example.taskmanagerproject.ShowDetailFragment_extra_edit_task";
+    public static final String EXTRA_NEW_TASK =
+            "com.example.taskmanagerproject.ShowDetailFragment_extra_new_task";
+    public static final String EXTRA_TASK_DELETED_CURRENT_POSITION =
+            "com.example.taskmanagerproject.taskDeletedCurrentPosition";
+    public static final String EXTRA_TASK_EDITED_CURRENT_POSITION =
+            "com.example.taskmanagerproject.taskEditedCurrentPosition";
 
     public static final String FRAGMENT_TAG_DATE_PICKER = "datePicker";
     public static final String FRAGMENT_TAG_TIME_PICKER = "timePicker";
     public static final String ARGS_TASK_ID = "argsTaskId";
     public static final String ARGS_TASK_POSITION = "argsTaskPosition";
+    public static final int REQUEST_CODE_STATE = 2;
+    public static final String FRAGMENT_TAG_CHANGED_STATE = "changedState";
+
+    public static final String KEY_USER_SELECTED_DATE = "userSelectedDate";
+    public static final String KEY_USER_SELECTED_TIME = "userSelectedTime";
 
     private EditText mEditTextTitle;
     private EditText mEditTextDescription;
@@ -49,6 +60,9 @@ public class ShowDetailFragment extends DialogFragment {
     private UUID mTaskId;
     private int mPosition;
     private TaskDBRepository mRepository;
+
+    private Date userSelectedDate;
+    private Long userSelectedTime;
 
     public ShowDetailFragment() {
         // Required empty public constructor
@@ -70,6 +84,7 @@ public class ShowDetailFragment extends DialogFragment {
         mTaskId = (UUID) getArguments().getSerializable(ARGS_TASK_ID);
         mPosition = getArguments().getInt(ARGS_TASK_POSITION);
         mRepository = TaskDBRepository.getInstance(getActivity(), mPosition);
+        mTask = mRepository.getTask(mTaskId);
     }
 
     @NonNull
@@ -79,6 +94,14 @@ public class ShowDetailFragment extends DialogFragment {
         View view = layoutInflater.inflate(R.layout.fragment_show_detail, null);
 
         findViews(view);
+
+        if(savedInstanceState != null){
+            userSelectedDate = (Date) savedInstanceState.getSerializable(KEY_USER_SELECTED_DATE);
+            userSelectedTime = savedInstanceState.getLong(KEY_USER_SELECTED_TIME);
+            mTask.setDate(userSelectedDate);
+            mTask.getDate().setTime(userSelectedTime);
+        }
+
         initViews();
         setListeners();
 
@@ -90,22 +113,38 @@ public class ShowDetailFragment extends DialogFragment {
                         mTask.setTitle(mEditTextTitle.getText().toString());
                         mTask.setDiscription(mEditTextDescription.getText().toString());
                         mTask.setDone(mCheckBoxDone.isChecked());
+//                        mRepository.insertTask(mTask);
                         Intent intent = new Intent();
-                        intent.putExtra(EXTRA_CURRENT_POSITION, mPosition);
+                        intent.putExtra(EXTRA_EDIT_TASK, true);
                         intent.putExtra(EXTRA_NEW_TASK, mTask);
                         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
                         dismiss();
                     }
                 })
-                .setNeutralButton("STATES", null)
                 .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mRepository.deleteTask(mTask);
+                        Intent intent = new Intent();
+                        intent.putExtra(EXTRA_TASK_DELETED_CURRENT_POSITION, mTask.getPosition());
+                        getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
                         dismiss();
-                        //TaskPagerActivity.start(getActivity(), mRepository.getCurrentPosition());
                     }
-                }).create();
+                })
+                .setNeutralButton("STATES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ChangeStateFragment changeStateFragment =
+                                ChangeStateFragment.newInstance(mTask.getPosition());
+
+                        changeStateFragment.setTargetFragment(
+                                ShowDetailFragment.this , REQUEST_CODE_STATE);
+
+                        changeStateFragment.show(getActivity().getSupportFragmentManager()
+                                ,FRAGMENT_TAG_CHANGED_STATE);
+                    }
+                })
+                .create();
     }
 
     private void findViews(View view) {
@@ -117,7 +156,6 @@ public class ShowDetailFragment extends DialogFragment {
     }
 
     private void initViews() {
-        mTask = mRepository.getTask(mTaskId);
         mEditTextTitle.setText(mTask.getTitle());
         mEditTextDescription.setText(mTask.getDiscription());
         mCheckBoxDone.setChecked(mTask.isDone());
@@ -157,23 +195,41 @@ public class ShowDetailFragment extends DialogFragment {
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(KEY_USER_SELECTED_DATE, userSelectedDate);
+        outState.putLong(KEY_USER_SELECTED_TIME, userSelectedTime);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
         if (resultCode != Activity.RESULT_OK || data == null)
             return;
 
         if (requestCode == REQUEST_CODE_DATE_PiCKER) {
-            Date userSelectedDate =
+            userSelectedDate =
                     (Date) data.getSerializableExtra(DatePickerFragment.USER_SELECTED_DATE);
             updateTaskDate(userSelectedDate);
         }
 
         if (requestCode == REQUEST_CODE_TIME_PICKER) {
-            Long userSelectedTime =
+            userSelectedTime =
                     data.getLongExtra(TimePickerFragment.USER_SELECTED_TIME, 0);
             updateTaskTime(userSelectedTime);
         }
 
+        if(requestCode == REQUEST_CODE_STATE){
+            int newPosition =
+                    data.getIntExtra(ChangeStateFragment.USER_SELECTED_POSITION, 0);
+
+          //  mRepository.updateTask(mTask);
+            Intent intent = new Intent();
+            intent.putExtra(EXTRA_TASK_EDITED_CURRENT_POSITION, mTask.getPosition());
+            mTask.setPosition(newPosition);
+            intent.putExtra(EXTRA_NEW_TASK, mTask);
+            getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
+        }
     }
 
     public void updateTaskDate(Date userSelectedDate) {

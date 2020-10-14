@@ -30,9 +30,9 @@ public interface TaskDatabaseDAO extends IRepository {
     @Query("SELECT * FROM taskTable WHERE uuid = :uuid")
     Task getTask(UUID uuid);
 
-//    @Query("SELECT * FROM taskTable WHERE uuid = :uuid")
-//    Task getTask(UUID uuid);
-//
-//    @Query("SELECT * FROM taskTable WHERE position = :position")
-//    List<Task> getListWithPosition(int position);
+    @Query("SELECT * FROM taskTable WHERE position = :position")
+    List<Task> getTaskStates(int position);
+
+//    @Query("DROP TABLE taskTable")
+//    List<Task> getTasks();
 }

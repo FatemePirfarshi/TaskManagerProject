@@ -35,8 +35,11 @@ public class AddTaskFragment extends DialogFragment {
     public static final String FRAGMENT_TAG_DATE_PICKER = "datePicker";
     public static final String FRAGMENT_TAG_TIME_PICKER = "timePicker";
     public static final String ARGS_LIST_POSITOIN = "listPositoin";
-    public static final String EXTRA_NEW_TASK = "AddTaskFragment_extra_new_task";
 
+    public static final String EXTRA_NEW_TASK_position =
+            "com.example.taskmanagerproject.AddTaskFragment_extra_new_task_position";
+    public static final String KEY_USER_SELECTED_DATE = "userSelectedDate";
+    public static final String KEY_USER_SELECTED_TIME = "userSelectedTime";
 
     private EditText mEditTextTitle;
     private EditText mEditTextDescription;
@@ -55,6 +58,9 @@ public class AddTaskFragment extends DialogFragment {
     public Task getTask() {
         return mTask;
     }
+
+    private Date userSelectedDate;
+    private Long userSelectedTime;
 
     public AddTaskFragment() {
         // Required empty public constructor
@@ -84,6 +90,14 @@ public class AddTaskFragment extends DialogFragment {
         View view = layoutInflater.inflate(R.layout.fragment_show_detail, null);
 
         findViews(view);
+
+        if(savedInstanceState != null){
+            userSelectedDate = (Date) savedInstanceState.getSerializable(KEY_USER_SELECTED_DATE);
+            userSelectedTime = savedInstanceState.getLong(KEY_USER_SELECTED_TIME);
+            mTask.setDate(userSelectedDate);
+            mTask.getDate().setTime(userSelectedTime);
+        }
+
         initViews();
         setListeners();
 
@@ -94,7 +108,6 @@ public class AddTaskFragment extends DialogFragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                         if (mEditTextTitle.getText().toString().trim().isEmpty())
-                            //Snackbar.make(mRootLinearLayout, "this field can't belank!!", Snackbar.LENGTH_LONG).show();
                             Toast.makeText(getActivity(),
                                     "Title field can't be blank!!", Toast.LENGTH_SHORT).show();
                         else {
@@ -102,15 +115,15 @@ public class AddTaskFragment extends DialogFragment {
                             mTask.setDiscription(mEditTextDescription.getText().toString());
                             mTask.setDone(mCheckBoxDone.isChecked());
                             mTask.setPosition(mCurrentPosition);
-                            // mRepository.insertTask(mTask, mCurrentPosition);
-                           // mRepository.updateTask(mTask);
+
                             mRepository.insertTask(mTask);
                             mRepository.updateLists(mTask);
 
                             Intent intent = new Intent();
-                            //intent.putExtra(EXTRA_NEW_TASK, mTask);
+                            intent.putExtra(EXTRA_NEW_TASK_position, mTask.getPosition());
 
-                            getTargetFragment().onActivityResult(TaskPagerActivity.REQUEST_CODE_ADD_TASK, Activity.RESULT_OK, intent);
+                            getTargetFragment().onActivityResult(
+                                    TaskPagerActivity.REQUEST_CODE_ADD_TASK, Activity.RESULT_OK, intent);
                             dismiss();
                         }
                     }
@@ -173,17 +186,24 @@ public class AddTaskFragment extends DialogFragment {
             return;
 
         if (requestCode == REQUEST_CODE_DATE_PiCKER) {
-            Date userSelectedDate =
+            userSelectedDate =
                     (Date) data.getSerializableExtra(DatePickerFragment.USER_SELECTED_DATE);
             updateTaskDate(userSelectedDate);
         }
 
         if (requestCode == REQUEST_CODE_TIME_PICKER) {
-            Long userSelectedTime =
+            userSelectedTime =
                     data.getLongExtra(TimePickerFragment.USER_SELECTED_TIME, 0);
             updateTaskTime(userSelectedTime);
         }
 
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(KEY_USER_SELECTED_DATE, userSelectedDate);
+        outState.putLong(KEY_USER_SELECTED_TIME, userSelectedTime);
     }
 
     public void updateTaskDate(Date userSelectedDate) {

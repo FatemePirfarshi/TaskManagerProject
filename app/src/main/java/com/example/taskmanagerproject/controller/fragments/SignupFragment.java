@@ -1,14 +1,13 @@
 package com.example.taskmanagerproject.controller.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.controller.activities.LoginActivity;
@@ -20,6 +19,9 @@ import com.google.android.material.textfield.TextInputLayout;
 
 public class SignupFragment extends Fragment {
 
+    public static final String BUNDLE_SIGNUP_USERNAME = "signupUsername";
+    public static final String BUNDLE_SIGNUP_PASSWORD = "signupPassword";
+
     public static final String ARGS_USER_NAME = "userName";
     public static final String ARGS_PASS_WORD = "passWord";
     private TextInputLayout mEditTextSignUpUserName;
@@ -27,8 +29,9 @@ public class SignupFragment extends Fragment {
     private Button mButtonSignup;
     private UserIRepository mRepository;
 
-    String userName;
-    String passWord;
+    private String userName;
+    private String passWord;
+    private User mUser = new User();
 
     public SignupFragment() {
         // Required empty public constructor
@@ -62,10 +65,24 @@ public class SignupFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_signup, container, false);
 
         findViews(view);
+
+        if(savedInstanceState != null){
+            userName = savedInstanceState.getString(BUNDLE_SIGNUP_USERNAME);
+            passWord = savedInstanceState.getString(BUNDLE_SIGNUP_PASSWORD);
+        }
+
         initViews();
         setListneres();
 
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(BUNDLE_SIGNUP_USERNAME, mEditTextSignUpUserName.getEditText().getText().toString());
+        outState.putString(BUNDLE_SIGNUP_PASSWORD, mEditTextSignUpPassword.getEditText().getText().toString());
     }
 
     private void findViews(View view) {
@@ -87,11 +104,10 @@ public class SignupFragment extends Fragment {
                     String signUpUserName = mEditTextSignUpUserName.getEditText().getText().toString();
                     String signUpPassWord = mEditTextSignUpPassword.getEditText().getText().toString();
 
-                    User user = new User();
-                    user.setUserName(signUpUserName);
-                    user.setPassWord(signUpPassWord);
+                    mUser.setUserName(signUpUserName);
+                    mUser.setPassWord(signUpPassWord);
 
-                    mRepository.insertUser(user);
+                    mRepository.insertUser(mUser);
                     LoginActivity.start(getActivity(), signUpUserName, signUpPassWord);
                     getActivity().finish();
                 }

@@ -35,4 +35,5 @@ public interface UserDatabaseDAO extends UserIRepository {
     @Transaction
     @Query("SELECT * FROM userTable")
     List<UserWithTasks> getUsersWithTasks();
+
 }
