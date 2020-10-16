@@ -21,6 +21,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.UUID;
+
 public class TaskPagerActivity extends AppCompatActivity {
 
     public static final String FRAGMENT_TAG_ADD_TASK = "fragmentTagAddTask";
@@ -29,10 +31,12 @@ public class TaskPagerActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_ADD_TASK = 100;
     public static final int REQUEST_CODE_DELETE_ALL = 200;
     public static final String FRAGMENT_TAG_DELETE_ALL = "deleteAll";
+    public static final String EXTRA_CURRENT_USER_ID = "currentUserId";
 
-    public static void start(Context context, int position) {
+    public static void start(Context context, int position, long userId) {
         Intent starter = new Intent(context, TaskPagerActivity.class);
         starter.putExtra(EXTRA_CURRENT_POSITION, position);
+        starter.putExtra(EXTRA_CURRENT_USER_ID, userId);
         context.startActivity(starter);
     }
 
@@ -43,6 +47,7 @@ public class TaskPagerActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
     private ViewPager2 mViewPager2;
     private TaskPagerAdapter mTaskPagerAdapter;
+    private long mUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +55,7 @@ public class TaskPagerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mCurrentPosition = getIntent().getIntExtra(EXTRA_CURRENT_POSITION, 0);
+        mUserId = getIntent().getLongExtra(EXTRA_CURRENT_USER_ID, 0);
         mRepository = TaskDBRepository.getInstance(this, mCurrentPosition);
 
         findViews();
@@ -87,7 +93,7 @@ public class TaskPagerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mCurrentPosition = mTabLayout.getSelectedTabPosition();
-                AddTaskFragment fragment = AddTaskFragment.newInstance(mCurrentPosition);
+                AddTaskFragment fragment = AddTaskFragment.newInstance(mCurrentPosition , mUserId);
                 fragment.setTargetFragment(
                         mTaskPagerAdapter.getFragments(mCurrentPosition), REQUEST_CODE_ADD_TASK);
                 fragment.show(getSupportFragmentManager(), FRAGMENT_TAG_ADD_TASK);

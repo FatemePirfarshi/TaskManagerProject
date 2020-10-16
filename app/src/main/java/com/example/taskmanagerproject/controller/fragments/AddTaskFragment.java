@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -29,6 +30,7 @@ import java.util.List;
 
 public class AddTaskFragment extends DialogFragment {
 
+    private static final String TAG = "AddTaskFragment";
     public static final int REQUEST_CODE_DATE_PiCKER = 0;
     public static final int REQUEST_CODE_TIME_PICKER = 1;
 
@@ -40,6 +42,7 @@ public class AddTaskFragment extends DialogFragment {
             "com.example.taskmanagerproject.AddTaskFragment_extra_new_task_position";
     public static final String KEY_USER_SELECTED_DATE = "userSelectedDate";
     public static final String KEY_USER_SELECTED_TIME = "userSelectedTime";
+    public static final String ARGS_CURRENT_USER = "currentUser";
 
     private EditText mEditTextTitle;
     private EditText mEditTextDescription;
@@ -52,7 +55,7 @@ public class AddTaskFragment extends DialogFragment {
     private TaskDBRepository mRepository;
     private List<Task> mCurrentList;
     private int mCurrentPosition;
-
+    private long userId;
     private Task mTask = new Task();
 
     public Task getTask() {
@@ -66,10 +69,11 @@ public class AddTaskFragment extends DialogFragment {
         // Required empty public constructor
     }
 
-    public static AddTaskFragment newInstance(int position) {
+    public static AddTaskFragment newInstance(int position, long userId) {
         AddTaskFragment fragment = new AddTaskFragment();
         Bundle args = new Bundle();
         args.putInt(ARGS_LIST_POSITOIN, position);
+        args.putLong(ARGS_CURRENT_USER, userId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -80,6 +84,7 @@ public class AddTaskFragment extends DialogFragment {
         mCurrentPosition = getArguments().getInt(ARGS_LIST_POSITOIN);
         mRepository = TaskDBRepository.getInstance(getActivity(), mCurrentPosition);
         mCurrentList = mRepository.getListWithPosition(mCurrentPosition);
+        userId = getArguments().getLong(ARGS_CURRENT_USER);
     }
 
     @NonNull
@@ -116,7 +121,10 @@ public class AddTaskFragment extends DialogFragment {
                             mTask.setDone(mCheckBoxDone.isChecked());
                             mTask.setPosition(mCurrentPosition);
 
+                            mTask.setUserCreatorId(userId);
                             mRepository.insertTask(mTask);
+
+                            Log.d(TAG, "onClick: mUserId" + mTask.getUserCreatorId());
                             mRepository.updateLists(mTask);
 
                             Intent intent = new Intent();

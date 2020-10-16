@@ -13,6 +13,7 @@ import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.model.UserWithTasks;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,6 +58,11 @@ public class TaskDBRepository implements TaskDatabaseDAO {
     @Override
     public List<Task> getTaskStates(int position) {
         return mTaskDAO.getTaskStates(position);
+    }
+
+    @Override
+    public List<Task> getTasksSearch(String title, String discription, Date date, long time) {
+        return mTaskDAO.getTasksSearch(title, discription, date, time);
     }
 
 //    @Override

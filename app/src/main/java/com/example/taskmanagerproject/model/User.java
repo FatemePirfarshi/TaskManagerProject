@@ -2,6 +2,7 @@ package com.example.taskmanagerproject.model;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.UUID;
 @Entity(tableName = "userTable")
 public class User {
 
+    @ForeignKey(entity = User.class, parentColumns = "userId", childColumns = "userCreatorId")
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "userId")
     private long userId;
@@ -26,9 +28,21 @@ public class User {
     @ColumnInfo(name = "date")
     private Date mDate;
 
+  //   @ForeignKey(entity = User.class, parentColumns = "taskId", childColumns = "userCreatorId")
+    @ColumnInfo(name = "taskId")
+    private long taskId;
+
     public User() {
         mId = mId.randomUUID();
         mDate = new Date();
+    }
+
+    public long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(long taskId) {
+        this.taskId = taskId;
     }
 
     public long getUserId() {

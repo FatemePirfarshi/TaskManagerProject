@@ -113,7 +113,7 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        updateUI();
+     //   updateUI();
     }
 
     private void updateUI(Task task, int position) {

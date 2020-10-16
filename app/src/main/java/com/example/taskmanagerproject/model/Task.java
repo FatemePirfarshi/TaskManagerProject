@@ -43,7 +43,6 @@ public class Task implements Serializable {
     @ColumnInfo(name = "position")
     private int mPosition;
 
-    @ForeignKey(entity = User.class, parentColumns = "userId", childColumns = "userCreatorId")
     @ColumnInfo(name = "userCreatorId")
     private long mUserCreatorId;
 

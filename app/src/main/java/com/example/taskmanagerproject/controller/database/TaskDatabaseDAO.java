@@ -9,6 +9,7 @@ import androidx.room.Update;
 import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.repository.IRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,6 +40,7 @@ public interface TaskDatabaseDAO extends IRepository {
 
 //    @Query("DROP TABLE taskTable")
 //    List<Task> getTasks();
+
 //    @Transaction
 //    @Query("SELECT * FROM taskTable"+
     //     " JOIN userTable ON userCreatorId = :userId" +
@@ -50,10 +52,10 @@ public interface TaskDatabaseDAO extends IRepository {
 //    @Query("SELECT * FROM userTable")
 //    List<UserWithTasks> userTasks();
 //
-//    @Query("SELECT * FROM taskTable WHERE title LIKE :title" +
-//            " OR discription LIKE :discription" +
-//    " OR date = :date" + " time = :time")
-//    List<Task> getTaskWithTitle(String title, String discription, Date date, long time);
+    @Query("SELECT * FROM taskTable WHERE title LIKE :title" +
+            " OR discription LIKE :discription" +
+    " OR date = :date" + " OR time = :time")
+    List<Task> getTasksSearch(String title, String discription, Date date, long time);
 //
 //    @Query("SELECT * FROM taskTable WHERE discription = :discription")
 //    List<Task> getTaskWithDiscription(String discription);

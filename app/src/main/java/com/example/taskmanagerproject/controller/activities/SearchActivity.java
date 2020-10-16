@@ -1,11 +1,10 @@
 package com.example.taskmanagerproject.controller.activities;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.inputmethod.EditorInfo;
 import android.widget.SearchView;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.taskmanagerproject.R;
@@ -25,35 +24,27 @@ public class SearchActivity extends SingleFragmentActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_task_search, menu);
 
-        final MenuItem searchItem = menu.findItem(R.id.app_bar_search);
-        SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                //todo
-                return false;
-            }
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //adapter.getFilter().filter(newText);
-                return false;
-            }
-        });
-        searchView.setOnQueryTextListener((SearchView.OnQueryTextListener) this);
+//        Intent intent = new Intent(this, SearchResultActivity.class);
+//        startActivity(intent);
         return true;
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.app_bar_search:
-                //todo
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.app_bar_search:
+//                //todo
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 }

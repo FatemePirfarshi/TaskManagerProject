@@ -1,6 +1,7 @@
 package com.example.taskmanagerproject.controller.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 public class LoginFragment extends Fragment {
 
+    private static final String TAG = "LoginFragment";
     public static final String BUNDLE_LOGIN_USERNAME = "loginUsername";
     public static final String BUNDLE_LOGIN_PASSWORD = "loginPassword";
     public static final String ARGS_SIGN_UP_USER_ID = "signUpUserID";
@@ -118,8 +120,9 @@ public class LoginFragment extends Fragment {
                         mEditTextPassword.getEditText().getText().toString());
 
                 if (user != null) {
+                    Log.d(TAG, "onClick: mUserId" + user.getUserId());
                     mTaskDBRepository.setLists(user.getId());
-                    TaskPagerActivity.start(getActivity(), 0);
+                    TaskPagerActivity.start(getActivity(), 0, user.getUserId());
                     getActivity().finish();
 
                 } else if (user == null)
@@ -130,7 +133,7 @@ public class LoginFragment extends Fragment {
                         mEditTextPassword.getEditText().getText().toString().equals(signupPassword)) {
 
                     mTaskDBRepository.setLists(mUserId);
-                    TaskPagerActivity.start(getActivity(), 0);
+                    TaskPagerActivity.start(getActivity(), 0, user.getUserId());
                     getActivity().finish();
                 } else
                     Snackbar.make(mFrameLayout,
