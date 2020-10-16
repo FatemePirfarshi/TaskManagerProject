@@ -9,8 +9,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-import static androidx.room.ForeignKey.CASCADE;
-
 @Entity(tableName = "taskTable"
 //        ,foreignKeys = @ForeignKey(entity = User.class,
 //        parentColumns = "userId",
@@ -39,15 +37,13 @@ public class Task implements Serializable {
     @ColumnInfo(name = "time")
     private long mTime;
 
-//    @ColumnInfo(name = "state")
-//    private State mState;
-
     @ColumnInfo(name = "done")
     private boolean mDone;
 
     @ColumnInfo(name = "position")
     private int mPosition;
 
+    @ForeignKey(entity = User.class, parentColumns = "userId", childColumns = "userCreatorId")
     @ColumnInfo(name = "userCreatorId")
     private long mUserCreatorId;
 
@@ -59,13 +55,8 @@ public class Task implements Serializable {
         mUserCreatorId = userCreatorId;
     }
 
-    //    public Task(){
-//        mId = mId.randomUUID();
-//        mDate = new Date();
-//    }
     public Task() {
         this(UUID.randomUUID());
-//        mDate = DateUtils.randomDate();
     }
 
     public Task(UUID id) {
@@ -73,7 +64,8 @@ public class Task implements Serializable {
         mDate = new Date();
     }
 
-    public Task(UUID id, String discription, String title, Date date, long time, boolean done, int position) {
+    public Task(UUID id, String discription, String title, Date date, long time, boolean done,
+                int position, long userCreatorId) {
         mId = id;
         mDiscription = discription;
         mTitle = title;
@@ -81,6 +73,7 @@ public class Task implements Serializable {
         mDone = done;
         mTime = time;
         mPosition = position;
+        mUserCreatorId = userCreatorId;
     }
 
     public long getPrimaryId() {
@@ -131,14 +124,6 @@ public class Task implements Serializable {
         mDate = date;
     }
 
-//    public State getState() {
-//        return mState;
-//    }
-//
-//    public void setState(State state) {
-//        mState = state;
-//    }
-
     public boolean isDone() {
         return mDone;
     }
@@ -153,15 +138,5 @@ public class Task implements Serializable {
 
     public void setTime(long time) {
         mTime = time;
-    }
-
-    public void update(Task task) {
-        mId = task.mId;
-        mDate = task.mDate;
-        mDiscription = task.mDiscription;
-        mTime = task.mTime;
-        //      mState = task.mState;
-        mTitle = task.mTitle;
-        mDone = task.mDone;
     }
 }

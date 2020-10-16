@@ -8,13 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.repository.TaskDBRepository;
 
 public class DeleteAllFragment extends DialogFragment {

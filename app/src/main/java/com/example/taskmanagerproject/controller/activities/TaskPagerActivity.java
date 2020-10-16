@@ -4,25 +4,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.controller.adapter.TaskPagerAdapter;
 import com.example.taskmanagerproject.controller.fragments.AddTaskFragment;
-import com.example.taskmanagerproject.controller.fragments.TaskListFragment;
+import com.example.taskmanagerproject.controller.fragments.DeleteAllFragment;
 import com.example.taskmanagerproject.repository.IRepository;
 import com.example.taskmanagerproject.repository.TaskDBRepository;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TaskPagerActivity extends AppCompatActivity {
 
@@ -30,6 +27,8 @@ public class TaskPagerActivity extends AppCompatActivity {
     public static final String EXTRA_CURRENT_POSITION =
             "com.example.taskmanagerproject.extraCurrentPosition";
     public static final int REQUEST_CODE_ADD_TASK = 100;
+    public static final int REQUEST_CODE_DELETE_ALL = 200;
+    public static final String FRAGMENT_TAG_DELETE_ALL = "deleteAll";
 
     public static void start(Context context, int position) {
         Intent starter = new Intent(context, TaskPagerActivity.class);
@@ -44,9 +43,6 @@ public class TaskPagerActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
     private ViewPager2 mViewPager2;
     private TaskPagerAdapter mTaskPagerAdapter;
-
-    private List<Fragment> mFragmentList = new ArrayList<>();
-    private TaskListFragment mTaskListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +66,7 @@ public class TaskPagerActivity extends AppCompatActivity {
     private void initViews() {
 
         mTaskPagerAdapter = new TaskPagerAdapter(this, this);
-       // mViewPager2.setOffscreenPageLimit(0);
+        // mViewPager2.setOffscreenPageLimit(0);
         mViewPager2.setAdapter(mTaskPagerAdapter);
         mViewPager2.setCurrentItem(mCurrentPosition);
 
@@ -103,5 +99,29 @@ public class TaskPagerActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_task_list, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_log_out:
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                return true;
+
+            case R.id.item_delete_all:
+                DeleteAllFragment.newInstance(0).show(
+                        getSupportFragmentManager(), FRAGMENT_TAG_DELETE_ALL);
+                return true;
+
+            case R.id.item_search:
+                Intent searchIntent = new Intent(this, SearchActivity.class);
+                startActivity(searchIntent);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

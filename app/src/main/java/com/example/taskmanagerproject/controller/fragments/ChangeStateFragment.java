@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -65,15 +64,15 @@ public class ChangeStateFragment extends DialogFragment {
                 .create();
     }
 
-    private void findViews(View view){
+    private void findViews(View view) {
         mRadioGroupStates = view.findViewById(R.id.radiogp_states);
         mButtonTodo = view.findViewById(R.id.btn_todo);
         mButtonDoing = view.findViewById(R.id.btn_doing);
         mButtonDone = view.findViewById(R.id.btn_done);
     }
 
-    private void initViews(){
-        switch (mCurrentPosition){
+    private void initViews() {
+        switch (mCurrentPosition) {
             case 0:
                 mButtonTodo.setChecked(true);
                 break;
@@ -86,11 +85,11 @@ public class ChangeStateFragment extends DialogFragment {
         }
     }
 
-    private void setListeners(){
+    private void setListeners() {
         mRadioGroupStates.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                switch (checkedId){
+                switch (checkedId) {
                     case R.id.btn_todo:
                         sendResult(0);
                         dismiss();
@@ -108,7 +107,7 @@ public class ChangeStateFragment extends DialogFragment {
         });
     }
 
-    private void sendResult(int userSelectedState){
+    private void sendResult(int userSelectedState) {
         Fragment fragment = getTargetFragment();
         Intent intent = new Intent();
         intent.putExtra(USER_SELECTED_POSITION, userSelectedState);

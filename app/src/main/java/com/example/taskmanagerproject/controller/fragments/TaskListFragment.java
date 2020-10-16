@@ -1,13 +1,9 @@
 package com.example.taskmanagerproject.controller.fragments;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -34,8 +30,6 @@ public class TaskListFragment extends Fragment {
     public static final int REQUEST_CODE_SHOW_DETAIL = 0;
     public static final String FRAGMENT_TAG_SHOW_DETAIL = "ShowDetail";
     public static final String TASK_LIST_POSITION = "taskListPosition";
-    public static final int REQUEST_CODE_DELETE_ALL = 1;
-    public static final String FRAGMENT_TAG_DELETE_ALL = "deleteAll";
 
     private RecyclerView mRecyclerView;
     private ImageView mImageView;
@@ -69,7 +63,6 @@ public class TaskListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setHasOptionsMenu(true);
         if (mTaskList.size() == 0)
             mPosition = getArguments().getInt(TASK_LIST_POSITION);
 
@@ -90,31 +83,6 @@ public class TaskListFragment extends Fragment {
         initViews();
 
         return view;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_task_list, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.item_log_out:
-                //todo
-                return true;
-            case R.id.item_delete_all:
-
-                DeleteAllFragment deleteAllFragment = DeleteAllFragment.newInstance(mPosition);
-                deleteAllFragment.setTargetFragment(
-                        TaskListFragment.this, REQUEST_CODE_DELETE_ALL);
-                deleteAllFragment.show(
-                        getActivity().getSupportFragmentManager(), FRAGMENT_TAG_DELETE_ALL);
-                updateUI();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     private void findViews(View view) {

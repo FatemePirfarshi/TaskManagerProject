@@ -8,9 +8,13 @@ import java.util.UUID;
 public interface UserIRepository {
 
     List<User> getUsers();
-    User getUser(UUID userId);
+
+    User getUser(UUID uuid);
+
     void insertUser(User user);
+
     void updateUser(User user);
+
     void deleteUser(User user);
 
 }

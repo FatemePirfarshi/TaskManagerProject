@@ -17,8 +17,8 @@ public class TaskPagerAdapter extends FragmentStateAdapter {
 
     private Context mContext;
 
-    private TaskDBRepository mRepository = TaskDBRepository.getInstance(mContext,0);
-    private List<TaskListFragment> mFragments=new ArrayList<TaskListFragment>(){{
+    private TaskDBRepository mRepository = TaskDBRepository.getInstance(mContext, 0);
+    private List<TaskListFragment> mFragments = new ArrayList<TaskListFragment>() {{
         add(TaskListFragment.newInstance(mRepository.getListWithPosition(0), 0));
         add(TaskListFragment.newInstance(mRepository.getListWithPosition(1), 1));
         add(TaskListFragment.newInstance(mRepository.getListWithPosition(2), 2));

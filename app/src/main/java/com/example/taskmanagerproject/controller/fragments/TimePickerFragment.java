@@ -53,7 +53,7 @@ public class TimePickerFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity())
-                .inflate(R.layout.fragment_time_picker,null);
+                .inflate(R.layout.fragment_time_picker, null);
 
         findViews(view);
         initViews();
@@ -63,7 +63,7 @@ public class TimePickerFragment extends DialogFragment {
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                          sendResult();
+                        sendResult();
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)
@@ -74,7 +74,7 @@ public class TimePickerFragment extends DialogFragment {
         mTimePicker = view.findViewById(R.id.time_picker_task);
     }
 
-    private void initViews(){
+    private void initViews() {
         mCalendar.setTime(mTaskDate);
         int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
         int minute = mCalendar.get(Calendar.MINUTE);
@@ -82,10 +82,10 @@ public class TimePickerFragment extends DialogFragment {
         mTimePicker.setMinute(minute);
     }
 
-    private void sendResult(){
+    private void sendResult() {
 
         int hour = mTimePicker.getCurrentHour();
-        int minute =  mTimePicker.getCurrentMinute();
+        int minute = mTimePicker.getCurrentMinute();
 
         mTaskDate.setHours(hour);
         mTaskDate.setMinutes(minute);

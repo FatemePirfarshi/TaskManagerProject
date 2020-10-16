@@ -6,6 +6,7 @@ import androidx.room.Room;
 
 import com.example.taskmanagerproject.controller.database.TaskDatabase;
 import com.example.taskmanagerproject.controller.database.UserDatabaseDAO;
+import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.model.User;
 import com.example.taskmanagerproject.model.UserWithTasks;
 
@@ -18,19 +19,19 @@ public class UserDBRepository implements UserDatabaseDAO {
     private UserDatabaseDAO mUserDAO;
     private Context mContext;
 
-    public static UserDBRepository getInstance(Context context){
-        if(sInstance == null)
+    public static UserDBRepository getInstance(Context context) {
+        if (sInstance == null)
             sInstance = new UserDBRepository(context);
         return sInstance;
     }
 
-    private UserDBRepository(Context context){
+    private UserDBRepository(Context context) {
         mContext = context.getApplicationContext();
 
         TaskDatabase taskDatabase =
-                Room.databaseBuilder(mContext, TaskDatabase.class, "user.db")
-                .allowMainThreadQueries()
-                .build();
+                Room.databaseBuilder(mContext, TaskDatabase.class, "task.db")
+                        .allowMainThreadQueries()
+                        .build();
 
         mUserDAO = taskDatabase.getUserDAO();
     }
@@ -41,14 +42,29 @@ public class UserDBRepository implements UserDatabaseDAO {
     }
 
     @Override
-    public User getUser(UUID userId) {
-        return mUserDAO.getUser(userId);
+    public User getUser(String userName, String passWord) {
+        return mUserDAO.getUser(userName, passWord);
+    }
+
+    @Override
+    public User getUser(UUID uuid) {
+        return mUserDAO.getUser(uuid);
+    }
+
+    @Override
+    public List<Task> getUserTasks(long userId) {
+        return mUserDAO.getUserTasks(userId);
     }
 
     @Override
     public List<UserWithTasks> getUsersWithTasks() {
         return mUserDAO.getUsersWithTasks();
     }
+
+//    @Override
+//    public List<UserWithTasks> getUsersWithTasks() {
+//        return mUserDAO.getUsersWithTasks();
+//    }
 
     @Override
     public void insertUser(User user) {

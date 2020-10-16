@@ -91,7 +91,7 @@ public class AddTaskFragment extends DialogFragment {
 
         findViews(view);
 
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             userSelectedDate = (Date) savedInstanceState.getSerializable(KEY_USER_SELECTED_DATE);
             userSelectedTime = savedInstanceState.getLong(KEY_USER_SELECTED_TIME);
             mTask.setDate(userSelectedDate);

@@ -95,7 +95,7 @@ public class ShowDetailFragment extends DialogFragment {
 
         findViews(view);
 
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             userSelectedDate = (Date) savedInstanceState.getSerializable(KEY_USER_SELECTED_DATE);
             userSelectedTime = savedInstanceState.getLong(KEY_USER_SELECTED_TIME);
             mTask.setDate(userSelectedDate);
@@ -138,10 +138,10 @@ public class ShowDetailFragment extends DialogFragment {
                                 ChangeStateFragment.newInstance(mTask.getPosition());
 
                         changeStateFragment.setTargetFragment(
-                                ShowDetailFragment.this , REQUEST_CODE_STATE);
+                                ShowDetailFragment.this, REQUEST_CODE_STATE);
 
                         changeStateFragment.show(getActivity().getSupportFragmentManager()
-                                ,FRAGMENT_TAG_CHANGED_STATE);
+                                , FRAGMENT_TAG_CHANGED_STATE);
                     }
                 })
                 .create();
@@ -219,11 +219,11 @@ public class ShowDetailFragment extends DialogFragment {
             updateTaskTime(userSelectedTime);
         }
 
-        if(requestCode == REQUEST_CODE_STATE){
+        if (requestCode == REQUEST_CODE_STATE) {
             int newPosition =
                     data.getIntExtra(ChangeStateFragment.USER_SELECTED_POSITION, 0);
 
-          //  mRepository.updateTask(mTask);
+            //  mRepository.updateTask(mTask);
             Intent intent = new Intent();
             intent.putExtra(EXTRA_TASK_EDITED_CURRENT_POSITION, mTask.getPosition());
             mTask.setPosition(newPosition);

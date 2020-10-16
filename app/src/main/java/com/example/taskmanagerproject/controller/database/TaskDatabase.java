@@ -12,6 +12,7 @@ import com.example.taskmanagerproject.model.User;
 public abstract class TaskDatabase extends RoomDatabase {
 
     public abstract TaskDatabaseDAO getTaskDAO();
+
     public abstract UserDatabaseDAO getUserDAO();
 
 }

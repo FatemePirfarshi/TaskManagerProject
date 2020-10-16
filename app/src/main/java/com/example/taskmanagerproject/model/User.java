@@ -26,7 +26,7 @@ public class User {
     @ColumnInfo(name = "date")
     private Date mDate;
 
-    public User(){
+    public User() {
         mId = mId.randomUUID();
         mDate = new Date();
     }

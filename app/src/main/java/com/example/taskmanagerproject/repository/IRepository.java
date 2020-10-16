@@ -8,9 +8,14 @@ import java.util.UUID;
 public interface IRepository {
 
     List<Task> getTaskStates(int position);
+
     List<Task> getTasks();
+
     Task getTask(UUID id);
+
     void insertTask(Task task);
+
     void deleteTask(Task task);
+
     void updateTask(Task task);
 }

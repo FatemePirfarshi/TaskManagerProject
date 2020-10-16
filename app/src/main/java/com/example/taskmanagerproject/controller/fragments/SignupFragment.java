@@ -13,7 +13,6 @@ import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.controller.activities.LoginActivity;
 import com.example.taskmanagerproject.model.User;
 import com.example.taskmanagerproject.repository.UserDBRepository;
-import com.example.taskmanagerproject.repository.UserIRepository;
 import com.google.android.material.textfield.TextInputLayout;
 
 
@@ -27,11 +26,11 @@ public class SignupFragment extends Fragment {
     private TextInputLayout mEditTextSignUpUserName;
     private TextInputLayout mEditTextSignUpPassword;
     private Button mButtonSignup;
-    private UserIRepository mRepository;
+    private UserDBRepository mRepository;
 
     private String userName;
     private String passWord;
-    private User mUser = new User();
+    //  private User mUser = new User();
 
     public SignupFragment() {
         // Required empty public constructor
@@ -66,7 +65,7 @@ public class SignupFragment extends Fragment {
 
         findViews(view);
 
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             userName = savedInstanceState.getString(BUNDLE_SIGNUP_USERNAME);
             passWord = savedInstanceState.getString(BUNDLE_SIGNUP_PASSWORD);
         }
@@ -91,7 +90,7 @@ public class SignupFragment extends Fragment {
         mButtonSignup = view.findViewById(R.id.btn_signup);
     }
 
-    private void initViews(){
+    private void initViews() {
         mEditTextSignUpUserName.getEditText().setText(userName);
         mEditTextSignUpPassword.getEditText().setText(passWord);
     }
@@ -100,15 +99,18 @@ public class SignupFragment extends Fragment {
         mButtonSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(validateInput()) {
+                if (validateInput()) {
                     String signUpUserName = mEditTextSignUpUserName.getEditText().getText().toString();
                     String signUpPassWord = mEditTextSignUpPassword.getEditText().getText().toString();
+                    User user = mRepository.getUser(signUpUserName, signUpPassWord);
+                    if (user == null) {
+                        user = new User();
+                        user.setUserName(signUpUserName);
+                        user.setPassWord(signUpPassWord);
+                        mRepository.insertUser(user);
+                    }
 
-                    mUser.setUserName(signUpUserName);
-                    mUser.setPassWord(signUpPassWord);
-
-                    mRepository.insertUser(mUser);
-                    LoginActivity.start(getActivity(), signUpUserName, signUpPassWord);
+                    LoginActivity.start(getActivity(), user.getId());
                     getActivity().finish();
                 }
             }

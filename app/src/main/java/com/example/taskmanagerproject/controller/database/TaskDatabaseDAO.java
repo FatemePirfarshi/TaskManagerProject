@@ -32,7 +32,35 @@ public interface TaskDatabaseDAO extends IRepository {
 
     @Query("SELECT * FROM taskTable WHERE position = :position")
     List<Task> getTaskStates(int position);
+//
+//    @ForeignKey(entity = Task.class, parentColumns = "userCreatorId", childColumns = "userId")
+//    @Query("SELECT * FROM taskTable WHERE userCreatorId = :userId")
+//    List<Task> getUserTAsks(long userId);
 
 //    @Query("DROP TABLE taskTable")
 //    List<Task> getTasks();
+//    @Transaction
+//    @Query("SELECT * FROM taskTable"+
+    //     " JOIN userTable ON userCreatorId = :userId" +
+//
+//            " WHERE userCreatorId = :userId")
+//    List<Task> userTasks(long userId);
+
+//    @Transaction
+//    @Query("SELECT * FROM userTable")
+//    List<UserWithTasks> userTasks();
+//
+//    @Query("SELECT * FROM taskTable WHERE title LIKE :title" +
+//            " OR discription LIKE :discription" +
+//    " OR date = :date" + " time = :time")
+//    List<Task> getTaskWithTitle(String title, String discription, Date date, long time);
+//
+//    @Query("SELECT * FROM taskTable WHERE discription = :discription")
+//    List<Task> getTaskWithDiscription(String discription);
+//
+//    @Query("SELECT * FROM taskTable WHERE date = :date")
+//    List<Task> getTaskWithDate(Date date);
+//
+//    @Query("SELECT * FROM taskTable WHERE time = :time")
+//    List<Task> getTaskWithTitle(long time);
 }

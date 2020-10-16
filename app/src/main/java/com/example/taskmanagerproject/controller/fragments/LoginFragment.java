@@ -1,28 +1,31 @@
 package com.example.taskmanagerproject.controller.fragments;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.controller.activities.SignupActivity;
 import com.example.taskmanagerproject.controller.activities.TaskPagerActivity;
+import com.example.taskmanagerproject.model.User;
+import com.example.taskmanagerproject.repository.TaskDBRepository;
+import com.example.taskmanagerproject.repository.UserDBRepository;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.UUID;
+
 public class LoginFragment extends Fragment {
 
-    public static final String ARGS_SIGNUP_USER_NAME = "signupUserName";
-    public static final String ARGS_SIGNUP_PASS_WORD = "signupPassWord";
     public static final String BUNDLE_LOGIN_USERNAME = "loginUsername";
     public static final String BUNDLE_LOGIN_PASSWORD = "loginPassword";
+    public static final String ARGS_SIGN_UP_USER_ID = "signUpUserID";
 
     private TextInputLayout mEditTextUserName;
     private TextInputLayout mEditTextPassword;
@@ -32,16 +35,19 @@ public class LoginFragment extends Fragment {
 
     private String signupUsername;
     private String signupPassword;
+    private UUID mUserId;
+
+    private TaskDBRepository mTaskDBRepository;
+    private UserDBRepository mUserRepository;
 
     public LoginFragment() {
         // Required empty public constructor
     }
 
-    public static LoginFragment newInstance(String userName, String password) {
+    public static LoginFragment newInstance(UUID uuid) {
         LoginFragment fragment = new LoginFragment();
         Bundle args = new Bundle();
-        args.putString(ARGS_SIGNUP_USER_NAME, userName);
-        args.putString(ARGS_SIGNUP_PASS_WORD, password);
+        args.putSerializable(ARGS_SIGN_UP_USER_ID, uuid);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,8 +56,16 @@ public class LoginFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        signupUsername = getArguments().getString(ARGS_SIGNUP_USER_NAME);
-        signupPassword = getArguments().getString(ARGS_SIGNUP_PASS_WORD);
+
+        mTaskDBRepository = TaskDBRepository.getInstance(getActivity(), 0);
+        mUserRepository = UserDBRepository.getInstance(getActivity());
+
+        mUserId = (UUID) getArguments().getSerializable(ARGS_SIGN_UP_USER_ID);
+        if (mUserId != null) {
+            User user = mUserRepository.getUser(mUserId);
+            signupUsername = user.getUserName();
+            signupPassword = user.getPassWord();
+        }
     }
 
     @Override
@@ -86,9 +100,11 @@ public class LoginFragment extends Fragment {
         mFrameLayout = view.findViewById(R.id.root_layout_login);
     }
 
-    private void initViews(){
+    private void initViews() {
         mEditTextUserName.getEditText().setText(signupUsername);
         mEditTextPassword.getEditText().setText(signupPassword);
+        mUserRepository = UserDBRepository.getInstance(getActivity());
+        mTaskDBRepository = TaskDBRepository.getInstance(getActivity(), 0);
     }
 
     private void setListeners() {
@@ -98,16 +114,25 @@ public class LoginFragment extends Fragment {
             public void onClick(View view) {
                 validateInput();
 
-                if(signupUsername == null || signupPassword == null )
+                User user = mUserRepository.getUser(mEditTextUserName.getEditText().getText().toString(),
+                        mEditTextPassword.getEditText().getText().toString());
+
+                if (user != null) {
+                    mTaskDBRepository.setLists(user.getId());
+                    TaskPagerActivity.start(getActivity(), 0);
+                    getActivity().finish();
+
+                } else if (user == null)
                     Snackbar.make(mFrameLayout,
                             "please click SIGN UP!!", Snackbar.LENGTH_LONG).show();
 
-                else if(mEditTextUserName.getEditText().getText().toString().equals(signupUsername) &&
+                else if (mEditTextUserName.getEditText().getText().toString().equals(signupUsername) &&
                         mEditTextPassword.getEditText().getText().toString().equals(signupPassword)) {
+
+                    mTaskDBRepository.setLists(mUserId);
                     TaskPagerActivity.start(getActivity(), 0);
                     getActivity().finish();
-                }
-                else
+                } else
                     Snackbar.make(mFrameLayout,
                             "Your information are not valid!!", Snackbar.LENGTH_LONG).show();
             }
@@ -119,7 +144,7 @@ public class LoginFragment extends Fragment {
                 SignupActivity.start(getActivity(),
                         mEditTextUserName.getEditText().getText().toString(),
                         mEditTextPassword.getEditText().getText().toString()
-                        );
+                );
             }
         });
     }
