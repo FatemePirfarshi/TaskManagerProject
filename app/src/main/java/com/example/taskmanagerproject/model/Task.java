@@ -1,11 +1,15 @@
 package com.example.taskmanagerproject.model;
 
+import androidx.annotation.TransitionRes;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+import androidx.room.Transaction;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -46,13 +50,8 @@ public class Task implements Serializable {
     @ColumnInfo(name = "userCreatorId")
     private long mUserCreatorId;
 
-    public long getUserCreatorId() {
-        return mUserCreatorId;
-    }
-
-    public void setUserCreatorId(long userCreatorId) {
-        mUserCreatorId = userCreatorId;
-    }
+    @Ignore
+    private SimpleDateFormat mFormat;
 
     public Task() {
         this(UUID.randomUUID());
@@ -74,6 +73,27 @@ public class Task implements Serializable {
         mPosition = position;
         mUserCreatorId = userCreatorId;
     }
+
+    public String getSimpleDate() {
+        mFormat = new SimpleDateFormat("dd MMM yyyy");
+        return mFormat.format(mDate);
+
+    }
+
+    public String getSimpleTime() {
+        mFormat = new SimpleDateFormat("hh:mm a");
+        return mFormat.format(mDate);
+
+    }
+
+    public long getUserCreatorId() {
+        return mUserCreatorId;
+    }
+
+    public void setUserCreatorId(long userCreatorId) {
+        mUserCreatorId = userCreatorId;
+    }
+
 
     public long getPrimaryId() {
         return primaryId;

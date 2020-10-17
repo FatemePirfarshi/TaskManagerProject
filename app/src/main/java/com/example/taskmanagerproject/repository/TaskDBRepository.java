@@ -60,24 +60,12 @@ public class TaskDBRepository implements TaskDatabaseDAO {
         return mTaskDAO.getTaskStates(position);
     }
 
-    @Override
-    public List<Task> getTasksSearch(String title, String discription, Date date, long time) {
-        return mTaskDAO.getTasksSearch(title, discription, date, time);
-    }
-
-//    @Override
-//    public List<UserWithTasks> userTasks() {
-//        return mTaskDAO.userTasks();
-//    }
-
     public void setLists(UUID userId) {
         mUserID = userId;
         mTodoTasks.clear();
         mDoingTasks.clear();
         mDoneTasks.clear();
 
-        //   User user = mUserDAO.getUser(userId);
-//        List<Task> tasks = mUserDAO.getUSerTasks(user.getUserId());
         List<UserWithTasks> userTasksList = mUserDAO.getUsersWithTasks();
         for (int i = 0; i < userTasksList.size(); i++) {
             if (userTasksList.get(i).user.getId().equals(userId))
@@ -98,11 +86,6 @@ public class TaskDBRepository implements TaskDatabaseDAO {
             }
         }
     }
-
-//    @Override
-//    public List<Task> userTasks(long userId) {
-    //return mTaskDAO.userTasks(userId);
-//    }
 
     public List<Task> getListWithPosition(int position) {
         mCurrentPosition = position;
@@ -159,10 +142,6 @@ public class TaskDBRepository implements TaskDatabaseDAO {
     }
 
     public void updateLists(Task newTask) {
-//        for (int i = 0; i < userTasks().size(); i++) {
-//            if(userTasks().get(i).user.getId().equals(mUserID))
-//                userTasks().get(i).tasks.add(newTask);
-//        }
         switch (newTask.getPosition()) {
             case 0:
                 mTodoTasks.add(mTaskDAO.getTask(newTask.getId()));

@@ -1,14 +1,23 @@
 package com.example.taskmanagerproject.controller.fragments;
 
 import android.app.Activity;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,11 +27,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.taskmanagerproject.R;
+import com.example.taskmanagerproject.controller.activities.LoginActivity;
 import com.example.taskmanagerproject.controller.activities.TaskPagerActivity;
 import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.repository.TaskDBRepository;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class TaskListFragment extends Fragment {
@@ -30,6 +41,8 @@ public class TaskListFragment extends Fragment {
     public static final int REQUEST_CODE_SHOW_DETAIL = 0;
     public static final String FRAGMENT_TAG_SHOW_DETAIL = "ShowDetail";
     public static final String TASK_LIST_POSITION = "taskListPosition";
+    public static final int REQUEST_CODE_DELETE_ALL = 1;
+    public static final String FRAGMENT_TAG_DELETE_ALL = "deleteAll";
 
     private RecyclerView mRecyclerView;
     private ImageView mImageView;
@@ -45,16 +58,10 @@ public class TaskListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public TaskListFragment(List<Task> tasks) {
-        mTaskList = tasks;
-    }
-
-    public static TaskListFragment newInstance(List<Task> tasks, int position) {
-        TaskListFragment fragment = new TaskListFragment(tasks);
+    public static TaskListFragment newInstance(int position) {
+        TaskListFragment fragment = new TaskListFragment();
         Bundle args = new Bundle();
         args.putInt(TASK_LIST_POSITION, position);
-        //  mTaskList = tasks;
-
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,10 +70,64 @@ public class TaskListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
         if (mTaskList.size() == 0)
             mPosition = getArguments().getInt(TASK_LIST_POSITION);
 
         mRepository = TaskDBRepository.getInstance(getActivity(), mPosition);
+        mTaskList = mRepository.getListWithPosition(mPosition);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_task_list, menu);
+        MenuItem searchItem = menu.findItem(R.id.app_bar_search);
+
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                mTaskAdapter.getFilter().filter(s);
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.item_log_out:
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                return true;
+
+            case R.id.item_delete_all:
+
+                DeleteAllFragment deleteAllFragment = DeleteAllFragment.newInstance(0);
+                deleteAllFragment.setTargetFragment(
+                        TaskListFragment.this, REQUEST_CODE_DELETE_ALL);
+                DeleteAllFragment.newInstance(0).show(
+                        getActivity().getSupportFragmentManager(), FRAGMENT_TAG_DELETE_ALL);
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -108,12 +169,6 @@ public class TaskListFragment extends Fragment {
             mTaskAdapter.notifyDataSetChanged();
         }
         setEmptyList();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-     //   updateUI();
     }
 
     private void updateUI(Task task, int position) {
@@ -170,12 +225,13 @@ public class TaskListFragment extends Fragment {
             mTask = task;
             mTitle.setText(task.getTitle());
             mStartTitle.setText(Character.toString(task.getTitle().charAt(0)));
-            mDate.setText(task.getDate().toString());
+            mDate.setText(task.getSimpleDate() + " " + task.getSimpleTime());
         }
     }
 
-    public class TaskAdapter extends RecyclerView.Adapter<TaskHolder> {
+    public class TaskAdapter extends RecyclerView.Adapter<TaskHolder> implements Filterable {
         private List<Task> mTasks;
+        private List<Task> mTasksFull;
 
         public List<Task> getTasks() {
             return mTasks;
@@ -183,10 +239,13 @@ public class TaskListFragment extends Fragment {
 
         public void setTasks(List<Task> tasks) {
             mTasks = tasks;
+            mTasksFull = new ArrayList<>(tasks);
+            notifyDataSetChanged();
         }
 
         public TaskAdapter(List<Task> tasks) {
             mTasks = tasks;
+            mTasksFull = new ArrayList<>(tasks);
         }
 
         @NonNull
@@ -209,6 +268,49 @@ public class TaskListFragment extends Fragment {
         public int getItemCount() {
             return mTasks.size();
         }
+
+        @Override
+        public Filter getFilter() {
+            return tasksFilter;
+        }
+
+        private Filter tasksFilter = new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+
+                List<Task> filteredList = new ArrayList<>();
+
+                if (charSequence == null || charSequence.length() == 0)
+                    filteredList.addAll(mTasksFull);
+                else {
+                    String filter = charSequence.toString().toLowerCase().trim();
+                    for (Task task : mTasksFull) {
+
+                        if (task.getTitle().toLowerCase().contains(filter) ||
+                                task.getDiscription().toLowerCase().contains(filter) ||
+                                task.getSimpleDate().toLowerCase().contains(filter) ||
+                                task.getSimpleTime().toLowerCase().contains(filter))
+                            filteredList.add(task);
+                    }
+                }
+                FilterResults results = new FilterResults();
+                results.values = filteredList;
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                if (mTasks != null)
+                    mTasks.clear();
+                else
+                    mTasks = new ArrayList<>();
+
+                if (filterResults != null)
+                    mTasks.addAll((Collection<? extends Task>) filterResults.values);
+                notifyDataSetChanged();
+            }
+        };
     }
 
     @Override
