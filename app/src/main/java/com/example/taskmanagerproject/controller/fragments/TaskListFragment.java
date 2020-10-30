@@ -32,6 +32,7 @@ import com.example.taskmanagerproject.controller.activities.TaskPagerActivity;
 import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.repository.TaskDBRepository;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -195,6 +196,7 @@ public class TaskListFragment extends Fragment {
         private TextView mDate;
         private TextView mStartTitle;
         private RelativeLayout mRootLayout;
+        private ImageView mShare;
 
         private Task mTask;
 
@@ -204,6 +206,22 @@ public class TaskListFragment extends Fragment {
             mDate = itemView.findViewById(R.id.txtview_date);
             mStartTitle = itemView.findViewById(R.id.task_title_start);
             mRootLayout = itemView.findViewById(R.id.row_root_layout);
+            mShare = itemView.findViewById(R.id.imgview_share);
+
+            mShare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, getReport());
+                    sendIntent.setType("text/plain");
+
+                    Intent shareIntent =
+                            Intent.createChooser(sendIntent, getString(R.string.send_report));
+
+                    if(sendIntent.resolveActivity(getActivity().getPackageManager()) != null)
+                        startActivity(shareIntent);
+                }
+            });
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -219,6 +237,38 @@ public class TaskListFragment extends Fragment {
                             getActivity().getSupportFragmentManager(), FRAGMENT_TAG_SHOW_DETAIL);
                 }
             });
+        }
+
+        private String getReport(){
+
+            String discriptionString = mTask.getDiscription().trim().isEmpty() ?
+                    getString(R.string.task_without_discription) :
+                    mTask.getDiscription();
+
+            String stateString;
+            switch (mPosition){
+                case 0:
+                    stateString = "TODO";
+                    break;
+                case 1:
+                    stateString = "DOING";
+                    break;
+                default:
+                    stateString = "DONE";
+                    break;
+            }
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy-HH:mm:SS");
+            String dateString = simpleDateFormat.format(mTask.getDate());
+
+            String report = getString(
+                    R.string.task_report,
+                    mTask.getTitle(),
+                    discriptionString,
+                    stateString,
+                    dateString);
+
+            return report;
         }
 
         public void bindTask(Task task) {

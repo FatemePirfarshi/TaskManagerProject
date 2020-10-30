@@ -25,14 +25,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
         android:layout_centerInParent="true"
+        android:layout_toLeftOf="@id/imgview_share"
         android:layout_marginTop="16dp"
         android:layout_marginRight="6dp"
         android:textColor="@android:color/black"
         android:textSize="24sp"
         android:textStyle="bold"
         tools:text="ارسال تمرین" />
+    <ImageView
+        android:id="@+id/imgview_share"
+        android:layout_width="43dp"
+        android:layout_height="48dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        app:srcCompat="@drawable/ic_share" />
 
     <TextView
         android:id="@+id/txtview_date"

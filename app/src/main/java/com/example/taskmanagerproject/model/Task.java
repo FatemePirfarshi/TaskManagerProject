@@ -1,24 +1,16 @@
 package com.example.taskmanagerproject.model;
 
-import androidx.annotation.TransitionRes;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
-import androidx.room.Transaction;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-@Entity(tableName = "taskTable"
-//        ,foreignKeys = @ForeignKey(entity = User.class,
-//        parentColumns = "userId",
-//        childColumns = "userCreatedId",
-//        onDelete = CASCADE)
-)
+@Entity(tableName = "taskTable")
 
 public class Task implements Serializable {
 

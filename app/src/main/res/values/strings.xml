@@ -23,4 +23,9 @@
     <string name="item_delete_all">DeleteAll</string>
     <string name="item_search">Search</string>
 
+    <string name="send_report">send task report</string>
+    <string name="task_report">%1$s! %2$s. The task is in %3$s state.
+        Also the task saved on %4$s.</string>
+    <string name="task_without_discription">There is no discription</string>
+
 </resources>
