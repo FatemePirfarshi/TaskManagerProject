@@ -27,10 +27,4 @@ public class Converters {
         return uuid.toString();
     }
 
-//    @TypeConverter
-//    public static State StringToState(String state){ return State.valueOf(state);}
-//
-//    @TypeConverter
-//    public static String StateToString(State state){return state.toString();}
-
 }

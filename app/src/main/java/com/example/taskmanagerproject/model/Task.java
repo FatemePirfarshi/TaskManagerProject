@@ -5,6 +5,7 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import java.io.File;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,6 +43,9 @@ public class Task implements Serializable {
     @ColumnInfo(name = "userCreatorId")
     private long mUserCreatorId;
 
+    @ColumnInfo(name = "photoPath")
+    private String mPhotoPath;
+
     @Ignore
     private SimpleDateFormat mFormat;
 
@@ -55,7 +59,7 @@ public class Task implements Serializable {
     }
 
     public Task(UUID id, String discription, String title, Date date, long time, boolean done,
-                int position, long userCreatorId) {
+                int position, long userCreatorId, String photoPath) {
         mId = id;
         mDiscription = discription;
         mTitle = title;
@@ -64,6 +68,7 @@ public class Task implements Serializable {
         mTime = time;
         mPosition = position;
         mUserCreatorId = userCreatorId;
+        mPhotoPath = photoPath;
     }
 
     public String getSimpleDate() {
@@ -150,4 +155,15 @@ public class Task implements Serializable {
     public void setTime(long time) {
         mTime = time;
     }
+
+    public String getPhotoPath() {
+        return mPhotoPath;
+    }
+
+    public void setPhotoPath(String photoPath) {
+        mPhotoPath = photoPath;
+    }
+
+    public String getPhotoFileName(){
+        return "IMG_" + getId().toString() + ".jpg";}
 }

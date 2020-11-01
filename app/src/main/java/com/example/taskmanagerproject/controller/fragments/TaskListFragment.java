@@ -211,15 +211,7 @@ public class TaskListFragment extends Fragment {
             mShare.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_TEXT, getReport());
-                    sendIntent.setType("text/plain");
-
-                    Intent shareIntent =
-                            Intent.createChooser(sendIntent, getString(R.string.send_report));
-
-                    if(sendIntent.resolveActivity(getActivity().getPackageManager()) != null)
-                        startActivity(shareIntent);
+                    shareReportIntent();
                 }
             });
 
@@ -269,6 +261,18 @@ public class TaskListFragment extends Fragment {
                     dateString);
 
             return report;
+        }
+
+        private void shareReportIntent() {
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, getReport());
+            sendIntent.setType("text/plain");
+
+            Intent shareIntent =
+                    Intent.createChooser(sendIntent, getString(R.string.send_report));
+
+            if(sendIntent.resolveActivity(getActivity().getPackageManager()) != null)
+                startActivity(shareIntent);
         }
 
         public void bindTask(Task task) {

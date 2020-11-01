@@ -5,12 +5,14 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +21,9 @@ import androidx.fragment.app.DialogFragment;
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.repository.TaskDBRepository;
+import com.example.taskmanagerproject.utils.PictureUtils;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -54,6 +58,7 @@ public class ShowDetailFragment extends DialogFragment {
     private Button mButtonDate;
     private Button mButtonTime;
     private CheckBox mCheckBoxDone;
+    private ImageView mImageViewPhoto;
 
     private Task mTask;
     private List<Task> mTasks;
@@ -153,6 +158,7 @@ public class ShowDetailFragment extends DialogFragment {
         mButtonDate = view.findViewById(R.id.btn_date);
         mButtonTime = view.findViewById(R.id.btn_time);
         mCheckBoxDone = view.findViewById(R.id.checkBox_done);
+        mImageViewPhoto = view.findViewById(R.id.imgview_photo);
     }
 
     private void initViews() {
@@ -160,8 +166,18 @@ public class ShowDetailFragment extends DialogFragment {
         mEditTextDescription.setText(mTask.getDiscription());
         mCheckBoxDone.setChecked(mTask.isDone());
 
+        setPhotoView();
+
         mButtonDate.setText(new SimpleDateFormat("yyyy.MM.dd").format(mTask.getDate()));
         mButtonTime.setText(new SimpleDateFormat("HH:mm:ss").format(mTask.getDate()));
+    }
+
+    private void setPhotoView() {
+        File mPhotoFile = mRepository.getPhotoFile(mTask);
+        if (mPhotoFile == null || !mPhotoFile.exists())
+            return;
+        Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getAbsolutePath(), getActivity());
+        mImageViewPhoto.setImageBitmap(bitmap);
     }
 
     private void setListeners() {

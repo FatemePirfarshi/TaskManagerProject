@@ -12,6 +12,7 @@ import com.example.taskmanagerproject.model.State;
 import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.model.UserWithTasks;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -159,5 +160,11 @@ public class TaskDBRepository implements TaskDatabaseDAO {
         for (int i = 0; i < mTaskListMain.size(); i++) {
             mTaskDAO.deleteTask(mTaskListMain.get(i));
         }
+    }
+
+    public File getPhotoFile(Task task){
+        File filesDir = mContext.getFilesDir();
+        File photoFile = new File(filesDir, task.getPhotoFileName());
+        return photoFile;
     }
 }
