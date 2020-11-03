@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -27,6 +28,7 @@ public class SignupFragment extends Fragment {
     private TextInputLayout mEditTextSignUpPassword;
     private Button mButtonSignup;
     private UserDBRepository mRepository;
+    private CheckBox mIsAdmin;
 
     private String userName;
     private String passWord;
@@ -88,6 +90,7 @@ public class SignupFragment extends Fragment {
         mEditTextSignUpUserName = view.findViewById(R.id.edittxt_signup_username);
         mEditTextSignUpPassword = view.findViewById(R.id.edittxt_signup_password);
         mButtonSignup = view.findViewById(R.id.btn_signup);
+        mIsAdmin = view.findViewById(R.id.checkBox_admin);
     }
 
     private void initViews() {
@@ -107,9 +110,10 @@ public class SignupFragment extends Fragment {
                         user = new User();
                         user.setUserName(signUpUserName);
                         user.setPassWord(signUpPassWord);
+                        user.setAdmin(mIsAdmin.isChecked());
+
                         mRepository.insertUser(user);
                     }
-
                     LoginActivity.start(getActivity(), user.getId());
                     getActivity().finish();
                 }

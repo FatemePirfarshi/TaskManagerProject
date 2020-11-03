@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -173,11 +174,17 @@ public class ShowDetailFragment extends DialogFragment {
     }
 
     private void setPhotoView() {
-        File mPhotoFile = mRepository.getPhotoFile(mTask);
-        if (mPhotoFile == null || !mPhotoFile.exists())
-            return;
-        Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getAbsolutePath(), getActivity());
-        mImageViewPhoto.setImageBitmap(bitmap);
+//        File photoFile = new File(mTask.getPhotoPath());
+//        if (photoFile == null || !photoFile.exists())
+//            return;
+//
+//        Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getAbsolutePath(), getActivity());
+//        mImageViewPhoto.setImageBitmap(bitmap);
+        //        File mPhotoFile = mRepository.getPhotoFile(mTask);
+//        if (mPhotoFile == null || !mPhotoFile.exists())
+//            return;
+//        Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getAbsolutePath(), getActivity());
+//        mImageViewPhoto.setImageBitmap(bitmap);
     }
 
     private void setListeners() {

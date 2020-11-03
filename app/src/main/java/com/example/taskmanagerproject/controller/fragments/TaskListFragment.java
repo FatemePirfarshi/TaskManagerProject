@@ -161,6 +161,8 @@ public class TaskListFragment extends Fragment {
     }
 
     private void updateUI() {
+        mRepository.updateList();
+        mTaskList = mRepository.getListWithPosition(mPosition);
 //  mTaskAdapter.notifyItemInserted(mTaskList.size() - 1);
         if (mTaskAdapter == null) {
             mTaskAdapter = new TaskAdapter(mTaskList);
@@ -174,6 +176,7 @@ public class TaskListFragment extends Fragment {
 
     private void updateUI(Task task, int position) {
         mRepository.updateTask(task);
+        mRepository.updateList();
         mTaskList = mRepository.getListWithPosition(position);
         mTaskAdapter.setTasks(mTaskList);
         mTaskAdapter.notifyDataSetChanged();
@@ -192,9 +195,7 @@ public class TaskListFragment extends Fragment {
 
     class TaskHolder extends RecyclerView.ViewHolder {
 
-        private TextView mTitle;
-        private TextView mDate;
-        private TextView mStartTitle;
+        private TextView mTitle, mDate, mStartTitle;
         private RelativeLayout mRootLayout;
         private ImageView mShare;
 
@@ -202,11 +203,7 @@ public class TaskListFragment extends Fragment {
 
         public TaskHolder(@NonNull View itemView) {
             super(itemView);
-            mTitle = itemView.findViewById(R.id.txtview_title);
-            mDate = itemView.findViewById(R.id.txtview_date);
-            mStartTitle = itemView.findViewById(R.id.task_title_start);
-            mRootLayout = itemView.findViewById(R.id.row_root_layout);
-            mShare = itemView.findViewById(R.id.imgview_share);
+            findViews(itemView);
 
             mShare.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -229,6 +226,14 @@ public class TaskListFragment extends Fragment {
                             getActivity().getSupportFragmentManager(), FRAGMENT_TAG_SHOW_DETAIL);
                 }
             });
+        }
+
+        private void findViews(@NonNull View itemView) {
+            mTitle = itemView.findViewById(R.id.txtview_title);
+            mDate = itemView.findViewById(R.id.txtview_date);
+            mStartTitle = itemView.findViewById(R.id.task_title_start);
+            mRootLayout = itemView.findViewById(R.id.row_root_layout);
+            mShare = itemView.findViewById(R.id.imgview_share);
         }
 
         private String getReport(){

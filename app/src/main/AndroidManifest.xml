@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.taskmanagerproject">
+    package="com.example.taskmanagerproject" >
 
-    <uses-feature android:name="android.hardware.camera"
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="true" />
+    <uses-feature android:name="android.hardware.type.watch" />
 
-    <uses-permission android:name=" android.permission.CAMERA"></uses-permission>
+    <uses-permission android:name=" android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -13,10 +16,15 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-
+        android:theme="@style/AppTheme" >
+        <activity android:name=".controller.activities.UsersActivity" >
+        </activity>
+        <!--
+               Set to true if your app is Standalone, that is, it does not require the handheld
+               app to run.
+        -->
         <activity android:name=".controller.activities.SignupActivity" />
-        <activity android:name=".controller.activities.LoginActivity">
+        <activity android:name=".controller.activities.LoginActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,16 +32,21 @@
             </intent-filter>
         </activity>
         <activity android:name=".controller.activities.TaskPagerActivity" />
-        
+
+        <meta-data
+            android:name="com.google.android.wearable.standalone"
+            android:value="true" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.taskmanagerproject.fileProvider"
             android:exported="false"
-            android:grantUriPermissions="true">
+            android:grantUriPermissions="true" >
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/files_path"/>
+                android:resource="@xml/files_path" />
         </provider>
+
     </application>
 
 </manifest>

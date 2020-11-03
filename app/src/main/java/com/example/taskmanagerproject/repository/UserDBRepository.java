@@ -80,4 +80,13 @@ public class UserDBRepository implements UserDatabaseDAO {
     public void deleteUser(User user) {
         mUserDAO.deleteUser(user);
     }
+
+    public int[] setUserTaskNumber(){
+        List<UserWithTasks> userTasksList = mUserDAO.getUsersWithTasks();
+        int[] result = new int[userTasksList.size()];
+        for (int i = 0; i < userTasksList.size(); i++) {
+           result[i] = userTasksList.get(i).tasks.size();
+        }
+        return result;
+    }
 }

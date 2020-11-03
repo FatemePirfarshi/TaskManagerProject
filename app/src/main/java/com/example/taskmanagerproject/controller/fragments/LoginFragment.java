@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.controller.activities.SignupActivity;
 import com.example.taskmanagerproject.controller.activities.TaskPagerActivity;
+import com.example.taskmanagerproject.controller.activities.UsersActivity;
 import com.example.taskmanagerproject.model.User;
 import com.example.taskmanagerproject.repository.TaskDBRepository;
 import com.example.taskmanagerproject.repository.UserDBRepository;
@@ -122,6 +123,11 @@ public class LoginFragment extends Fragment {
                 if (user != null) {
                     Log.d(TAG, "onClick: mUserId" + user.getUserId());
                     mTaskDBRepository.setLists(user.getId());
+                    if(user.isAdmin()) {
+                        UsersActivity.start(getActivity());
+                        getActivity().finish();
+                        return;
+                    }
                     TaskPagerActivity.start(getActivity(), 0, user.getUserId());
                     getActivity().finish();
 
@@ -133,6 +139,11 @@ public class LoginFragment extends Fragment {
                         mEditTextPassword.getEditText().getText().toString().equals(signupPassword)) {
 
                     mTaskDBRepository.setLists(mUserId);
+                    if(user.isAdmin()) {
+                        UsersActivity.start(getActivity());
+                        getActivity().finish();
+                        return;
+                    }
                     TaskPagerActivity.start(getActivity(), 0, user.getUserId());
                     getActivity().finish();
                 } else

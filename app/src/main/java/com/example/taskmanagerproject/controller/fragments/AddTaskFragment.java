@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -55,6 +56,7 @@ public class AddTaskFragment extends DialogFragment {
     public static final String KEY_USER_SELECTED_TIME = "userSelectedTime";
     public static final String ARGS_CURRENT_USER = "currentUser";
     public static final String AUTHORITY = "com.example.taskmanagerproject.fileProvider";
+    public static final int REQUEST_CODE_CHOOSE_PHOTO = 3;
 
     private EditText mEditTextTitle;
     private EditText mEditTextDescription;
@@ -144,7 +146,7 @@ public class AddTaskFragment extends DialogFragment {
                             mRepository.insertTask(mTask);
 
                             Log.d(TAG, "onClick: mUserId" + mTask.getUserCreatorId());
-                            mRepository.updateLists(mTask);
+                            mRepository.updateList();
 
                             Intent intent = new Intent();
                             intent.putExtra(EXTRA_NEW_TASK_position, mTask.getPosition());
@@ -217,9 +219,18 @@ public class AddTaskFragment extends DialogFragment {
         mButtonChoosePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //todo
+                choosePhotoIntent();
             }
         });
+    }
+
+    private void choosePhotoIntent() {
+        Intent choosePhotoIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        choosePhotoIntent.setType("image/*");
+        if (choosePhotoIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+//            choosePhotoIntent.putExtra(MediaStore.Images.Media.DATA, );
+            startActivityForResult(choosePhotoIntent, REQUEST_CODE_CHOOSE_PHOTO);
+        }
     }
 
     private void takePictureIntent() {
@@ -228,9 +239,9 @@ public class AddTaskFragment extends DialogFragment {
             if (mPhotoFile != null && takePictureIntent
                     .resolveActivity(getActivity().getPackageManager()) != null) {
 
-                Uri photoURI = generateUriForPhotoFile();
+                Uri photoURI = generateUri();
 
-                grantWriteUriToAllResolvedActivities(takePictureIntent, photoURI);
+                grantWriteUri(takePictureIntent, photoURI);
 
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_CODE_IMAGE_CAPTURE);
@@ -240,7 +251,7 @@ public class AddTaskFragment extends DialogFragment {
         }
     }
 
-    private void grantWriteUriToAllResolvedActivities(Intent takePictureIntent, Uri photoURI) {
+    private void grantWriteUri(Intent takePictureIntent, Uri photoURI) {
         List<ResolveInfo> activities = getActivity().getPackageManager()
                 .queryIntentActivities(
                         takePictureIntent,
@@ -253,7 +264,7 @@ public class AddTaskFragment extends DialogFragment {
         }
     }
 
-    private Uri generateUriForPhotoFile() {
+    private Uri generateUri() {
         return FileProvider.getUriForFile(
                 getContext(),
                 AUTHORITY,
@@ -271,15 +282,67 @@ public class AddTaskFragment extends DialogFragment {
                     (Date) data.getSerializableExtra(DatePickerFragment.USER_SELECTED_DATE);
             updateTaskDate(userSelectedDate);
 
-        }else if (requestCode == REQUEST_CODE_TIME_PICKER) {
+        } else if (requestCode == REQUEST_CODE_TIME_PICKER) {
             userSelectedTime =
                     data.getLongExtra(TimePickerFragment.USER_SELECTED_TIME, 0);
             updateTaskTime(userSelectedTime);
 
-        }else if (requestCode == REQUEST_CODE_IMAGE_CAPTURE) {
-            Uri photoUri = generateUriForPhotoFile();
+        } else if (requestCode == REQUEST_CODE_IMAGE_CAPTURE) {
+            Uri photoUri = generateUri();
             getActivity().revokeUriPermission(photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             updatePhotoView();
+
+        } else if (requestCode == REQUEST_CODE_CHOOSE_PHOTO) {
+            Uri photoUri = data.getData();
+            getPathFromUri(photoUri);
+            mImageViewPhoto.setImageURI(photoUri);
+        }
+    }
+
+    //
+//    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
+//        ParcelFileDescriptor parcelFileDescriptor =
+//                getActivity().getContentResolver().openFileDescriptor(uri, "r");
+//        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+//        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+//        parcelFileDescriptor.close();
+//        return image;
+//    }
+//    private String getPathFromURI(Uri contentUri) {
+//        Cursor cursor = getContentResolver().query(contentUri, null, null, null, null);
+//        cursor.moveToFirst();
+//        String document_id = cursor.getString(0);
+//        document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
+//        cursor.close();
+//
+//        cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null
+//                , MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
+//        cursor.moveToFirst();
+//        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+//        cursor.close();
+//
+//        return path;
+//    }
+
+    private void getPathFromUri(Uri photoUri) {
+
+        String[] projection = new String[]{MediaStore.Images.Media.DATA};
+        Cursor cursor = getActivity().getContentResolver().query(
+                photoUri,
+                projection,
+                null,
+                null,
+                null);
+
+        if (cursor == null || cursor.getCount() == 0)
+            return;
+
+        try {
+            cursor.moveToFirst();
+            String imagePath = cursor.getString(0);
+            mTask.setPhotoPath(imagePath);
+        } finally {
+            cursor.close();
         }
     }
 

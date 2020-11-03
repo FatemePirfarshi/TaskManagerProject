@@ -71,6 +71,7 @@ public class TaskDBRepository implements TaskDatabaseDAO {
         for (int i = 0; i < userTasksList.size(); i++) {
             if (userTasksList.get(i).user.getId().equals(userId))
                 tasks = userTasksList.get(i).tasks;
+//            userTasksList.get(i).user.setTaskNumber(userTasksList.get(i).tasks.size());
         }
 
         for (int i = 0; i < tasks.size(); i++) {
@@ -90,11 +91,11 @@ public class TaskDBRepository implements TaskDatabaseDAO {
 
     public List<Task> getListWithPosition(int position) {
         mCurrentPosition = position;
-
         switch (position) {
             case 0:
                 mState = State.TODO;
                 return mTodoTasks;
+            //    return mTaskDAO.getTaskStates(0);
             case 1:
                 mState = State.DOING;
                 return mDoingTasks;
@@ -142,17 +143,28 @@ public class TaskDBRepository implements TaskDatabaseDAO {
         }
     }
 
-    public void updateLists(Task newTask) {
-        switch (newTask.getPosition()) {
-            case 0:
-                mTodoTasks.add(mTaskDAO.getTask(newTask.getId()));
-                break;
-            case 1:
-                mDoingTasks.add(mTaskDAO.getTask(newTask.getId()));
-                break;
-            case 2:
-                mDoneTasks.add(mTaskDAO.getTask(newTask.getId()));
-                break;
+    public void updateList(){
+        List<UserWithTasks> userTasksList = mUserDAO.getUsersWithTasks();
+        for (int i = 0; i < userTasksList.size(); i++) {
+            if (userTasksList.get(i).user.getId().equals(mUserID))
+                tasks = userTasksList.get(i).tasks;
+        }
+
+        mTodoTasks.clear();
+        mDoingTasks.clear();
+        mDoneTasks.clear();
+        for (int i = 0; i < tasks.size(); i++) {
+            switch (tasks.get(i).getPosition()){
+                case 0:
+                    mTodoTasks.add(tasks.get(i));
+                    break;
+                case 1:
+                    mDoingTasks.add(tasks.get(i));
+                    break;
+                case 2:
+                    mDoneTasks.add(tasks.get(i));
+                    break;
+            }
         }
     }
 

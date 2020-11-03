@@ -28,15 +28,29 @@ public class User {
     @ColumnInfo(name = "date")
     private Date mDate;
 
-  //   @ForeignKey(entity = User.class, parentColumns = "taskId", childColumns = "userCreatorId")
     @ColumnInfo(name = "taskId")
     private long taskId;
+
+    @ColumnInfo(name = "isAdmin")
+    private boolean isAdmin;
+
+    @ColumnInfo(name ="taskNumber")
+    private int taskNumber;
 
     public User() {
         mId = mId.randomUUID();
         mDate = new Date();
     }
-
+    public User(UUID id, String userName, String passWord, Date date, long taskId, boolean isAdmin,
+                int taskNumber) {
+        mId = id;
+        mUserName = userName;
+        mPassWord = passWord;
+        mDate = date;
+        this.taskId = taskId;
+//        mIsAdmin = isAdmin;
+        this.taskNumber = taskNumber;
+    }
     public long getTaskId() {
         return taskId;
     }
@@ -83,5 +97,21 @@ public class User {
 
     public void setDate(Date date) {
         mDate = date;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
+    public int getTaskNumber() {
+        return taskNumber;
+    }
+
+    public void setTaskNumber(int taskNumber) {
+        this.taskNumber = taskNumber;
     }
 }
