@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/root_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F6EFEF"
+        android:orientation="vertical">
+        <ImageView
+            android:id="@+id/imgview_photo"
+            android:layout_width="150dp"
+            android:layout_height="90dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_camera" />
+
+        <Button
+            android:id="@+id/btn_take_photo"
+            android:layout_width="200dp"
+            android:layout_height="38dp"
+            android:layout_gravity="center"
+            android:backgroundTint="#9A9999"
+            android:text="take a photo"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btn_choose_photo"
+            android:layout_width="200dp"
+            android:layout_height="38dp"
+            android:layout_gravity="center"
+            android:backgroundTint="#9A9999"
+            android:text="choose from gallery"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:text="Title"
+            android:textColor="#5A0802"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/edittxt_title"
+            style="@style/Widget.MaterialComponents.TextView"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:text="Description:"
+            android:textColor="#5A0802"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/edittxt_description"
+            style="@style/Widget.MaterialComponents.TextView"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btn_date"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
+            android:backgroundTint="#FF754A"
+            android:text="Button"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btn_time"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:backgroundTint="#FF754A"
+            android:text="Button"
+            android:textSize="18sp" />
+
+        <CheckBox
+            android:id="@+id/checkBox_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Check"
+            android:textSize="18sp"
+            app:buttonTint="#FF754A" />
+
+    </LinearLayout>
+
+</ScrollView>

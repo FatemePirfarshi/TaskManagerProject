@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:id="@+id/root_linear_layout"
@@ -10,6 +10,15 @@
         android:layout_height="wrap_content"
         android:background="#F6EFEF"
         android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imgview_photo"
+            android:layout_width="150dp"
+            android:layout_height="90dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_camera" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -81,9 +90,39 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Done"
+            android:text="Check"
             android:textSize="18sp"
             app:buttonTint="#FF754A" />
+
+        <RadioGroup
+            android:id="@+id/radiogp_states"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/btn_todo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_todo"
+                app:buttonTint="#FF754A" />
+
+            <RadioButton
+                android:id="@+id/btn_doing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_doing"
+                app:buttonTint="#FF754A" />
+
+            <RadioButton
+                android:id="@+id/btn_done"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_done"
+                app:buttonTint="#FF754A" />
+
+        </RadioGroup>
 
     </LinearLayout>
 

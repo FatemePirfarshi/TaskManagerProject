@@ -33,6 +33,9 @@ public interface TaskDatabaseDAO extends IRepository {
     @Query("SELECT * FROM taskTable WHERE position = :position")
     List<Task> getTaskStates(int position);
 
+    @Query("DELETE FROM taskTable WHERE uuid = :uuid")
+    void deleteAll(UUID uuid);
+
 //    @Query("SELECT * FROM taskTable WHERE title LIKE :title" +
 //            " OR discription LIKE :discription" +
 //    " OR date = :date" + " OR time = :time")

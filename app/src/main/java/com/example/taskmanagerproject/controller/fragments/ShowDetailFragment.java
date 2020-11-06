@@ -6,7 +6,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +25,7 @@ import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.repository.TaskDBRepository;
 import com.example.taskmanagerproject.utils.PictureUtils;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -48,18 +51,16 @@ public class ShowDetailFragment extends DialogFragment {
     public static final String FRAGMENT_TAG_TIME_PICKER = "timePicker";
     public static final String ARGS_TASK_ID = "argsTaskId";
     public static final String ARGS_TASK_POSITION = "argsTaskPosition";
-    public static final int REQUEST_CODE_STATE = 2;
-    public static final String FRAGMENT_TAG_CHANGED_STATE = "changedState";
 
     public static final String KEY_USER_SELECTED_DATE = "userSelectedDate";
     public static final String KEY_USER_SELECTED_TIME = "userSelectedTime";
 
-    private EditText mEditTextTitle;
-    private EditText mEditTextDescription;
-    private Button mButtonDate;
-    private Button mButtonTime;
+    private EditText mEditTextTitle, mEditTextDescription;
+    private Button mButtonDate, mButtonTime;
     private CheckBox mCheckBoxDone;
     private ImageView mImageViewPhoto;
+    private RadioGroup mRadioGroupStates;
+    private RadioButton mButtonTodo, mButtonDoing, mButtonDone;
 
     private Task mTask;
     private List<Task> mTasks;
@@ -119,7 +120,6 @@ public class ShowDetailFragment extends DialogFragment {
                         mTask.setTitle(mEditTextTitle.getText().toString());
                         mTask.setDiscription(mEditTextDescription.getText().toString());
                         mTask.setDone(mCheckBoxDone.isChecked());
-//                        mRepository.insertTask(mTask);
                         Intent intent = new Intent();
                         intent.putExtra(EXTRA_EDIT_TASK, true);
                         intent.putExtra(EXTRA_NEW_TASK, mTask);
@@ -136,20 +136,7 @@ public class ShowDetailFragment extends DialogFragment {
                         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
                         dismiss();
                     }
-                })
-                .setNeutralButton("STATES", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        ChangeStateFragment changeStateFragment =
-                                ChangeStateFragment.newInstance(mTask.getPosition());
-
-                        changeStateFragment.setTargetFragment(
-                                ShowDetailFragment.this, REQUEST_CODE_STATE);
-
-                        changeStateFragment.show(getActivity().getSupportFragmentManager()
-                                , FRAGMENT_TAG_CHANGED_STATE);
-                    }
-                })
+                }).setNeutralButton("Cancle", null)
                 .create();
     }
 
@@ -160,6 +147,10 @@ public class ShowDetailFragment extends DialogFragment {
         mButtonTime = view.findViewById(R.id.btn_time);
         mCheckBoxDone = view.findViewById(R.id.checkBox_done);
         mImageViewPhoto = view.findViewById(R.id.imgview_photo);
+        mRadioGroupStates = view.findViewById(R.id.radiogp_states);
+        mButtonTodo = view.findViewById(R.id.btn_todo);
+        mButtonDoing = view.findViewById(R.id.btn_doing);
+        mButtonDone = view.findViewById(R.id.btn_done);
     }
 
     private void initViews() {
@@ -171,20 +162,33 @@ public class ShowDetailFragment extends DialogFragment {
 
         mButtonDate.setText(new SimpleDateFormat("yyyy.MM.dd").format(mTask.getDate()));
         mButtonTime.setText(new SimpleDateFormat("HH:mm:ss").format(mTask.getDate()));
+
+        switch (mPosition) {
+            case 0:
+                mButtonTodo.setChecked(true);
+                break;
+            case 1:
+                mButtonDoing.setChecked(true);
+                break;
+            case 2:
+                mButtonDone.setChecked(true);
+                break;
+        }
     }
 
     private void setPhotoView() {
-//        File photoFile = new File(mTask.getPhotoPath());
-//        if (photoFile == null || !photoFile.exists())
-//            return;
-//
-//        Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getAbsolutePath(), getActivity());
-//        mImageViewPhoto.setImageBitmap(bitmap);
-        //        File mPhotoFile = mRepository.getPhotoFile(mTask);
-//        if (mPhotoFile == null || !mPhotoFile.exists())
-//            return;
-//        Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getAbsolutePath(), getActivity());
-//        mImageViewPhoto.setImageBitmap(bitmap);
+
+        if (mTask.getPhotoPath() != null) {
+//            File mPhotoFile = new File(mTask.getPhotoPath());
+//            if (mPhotoFile == null || !mPhotoFile.exists())
+//                return;
+//            Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getAbsolutePath(), getActivity());
+//            mImageViewPhoto.setImageBitmap(bitmap);
+            Picasso.get()
+                    .load(mTask.getPhotoPath())
+                    .into(mImageViewPhoto);
+            //mImageViewPhoto.setImageURI(Uri.fromFile(new File(mTask.getPhotoPath())));
+        }
     }
 
     private void setListeners() {
@@ -215,11 +219,30 @@ public class ShowDetailFragment extends DialogFragment {
                         FRAGMENT_TAG_TIME_PICKER);
             }
         });
+
+        mRadioGroupStates.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                switch (checkedId) {
+                    case R.id.btn_todo:
+                        mTask.setPosition(0);
+                        break;
+                    case R.id.btn_doing:
+                        mTask.setPosition(1);
+                        break;
+                    case R.id.btn_done:
+                        mTask.setPosition(2);
+                        break;
+                }
+            }
+        });
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        userSelectedDate = mTask.getDate();
+        userSelectedTime = mTask.getTime();
         outState.putSerializable(KEY_USER_SELECTED_DATE, userSelectedDate);
         outState.putLong(KEY_USER_SELECTED_TIME, userSelectedTime);
     }
@@ -240,18 +263,6 @@ public class ShowDetailFragment extends DialogFragment {
             userSelectedTime =
                     data.getLongExtra(TimePickerFragment.USER_SELECTED_TIME, 0);
             updateTaskTime(userSelectedTime);
-        }
-
-        if (requestCode == REQUEST_CODE_STATE) {
-            int newPosition =
-                    data.getIntExtra(ChangeStateFragment.USER_SELECTED_POSITION, 0);
-
-            //  mRepository.updateTask(mTask);
-            Intent intent = new Intent();
-            intent.putExtra(EXTRA_TASK_EDITED_CURRENT_POSITION, mTask.getPosition());
-            mTask.setPosition(newPosition);
-            intent.putExtra(EXTRA_NEW_TASK, mTask);
-            getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
         }
     }
 

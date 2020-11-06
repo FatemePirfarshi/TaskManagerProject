@@ -20,6 +20,7 @@ import com.example.taskmanagerproject.model.User;
 import com.example.taskmanagerproject.repository.TaskDBRepository;
 import com.example.taskmanagerproject.repository.UserDBRepository;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -128,7 +129,8 @@ public class UserListFragment extends Fragment {
             mUser = user;
             mUserName.setText(user.getUserName());
             mNumberOfTask.setText(user.getTaskNumber()+" Task");
-            mDate.setText(user.getDate().toString());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy-HH:mm:SS");
+            mDate.setText(simpleDateFormat.format(user.getDate()));
         }
     }
 

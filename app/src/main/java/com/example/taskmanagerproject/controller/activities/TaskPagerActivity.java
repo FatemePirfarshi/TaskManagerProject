@@ -15,6 +15,7 @@ import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.controller.adapter.TaskPagerAdapter;
 import com.example.taskmanagerproject.controller.fragments.AddTaskFragment;
 import com.example.taskmanagerproject.controller.fragments.DeleteAllFragment;
+import com.example.taskmanagerproject.controller.fragments.TaskListFragment;
 import com.example.taskmanagerproject.repository.IRepository;
 import com.example.taskmanagerproject.repository.TaskDBRepository;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -23,7 +24,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.UUID;
 
-public class TaskPagerActivity extends AppCompatActivity {
+public class TaskPagerActivity extends AppCompatActivity implements TaskListFragment.Callbacks {
 
     public static final String FRAGMENT_TAG_ADD_TASK = "fragmentTagAddTask";
     public static final String EXTRA_CURRENT_POSITION =
@@ -93,7 +94,7 @@ public class TaskPagerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mCurrentPosition = mTabLayout.getSelectedTabPosition();
-                AddTaskFragment fragment = AddTaskFragment.newInstance(mCurrentPosition , mUserId);
+                AddTaskFragment fragment = AddTaskFragment.newInstance(mCurrentPosition, mUserId);
                 fragment.setTargetFragment(
                         mTaskPagerAdapter.getFragments(mCurrentPosition), REQUEST_CODE_ADD_TASK);
                 fragment.show(getSupportFragmentManager(), FRAGMENT_TAG_ADD_TASK);
@@ -101,4 +102,12 @@ public class TaskPagerActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onTaskListUpdated(int position) {
+        if (findViewById(R.id.fragment_container) != null) {
+            TaskListFragment taskListFragment = (TaskListFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.fragment_container);
+            taskListFragment.updateUI(position);
+        }
+    }
 }

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -33,7 +34,7 @@ public class LoginFragment extends Fragment {
     private TextInputLayout mEditTextUserName;
     private TextInputLayout mEditTextPassword;
     private Button mButtonLogIn;
-    private Button mButtonSignUp;
+    private TextView mButtonSignUp;
     private FrameLayout mFrameLayout;
 
     private String signupUsername;

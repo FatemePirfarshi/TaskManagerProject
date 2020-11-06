@@ -4,15 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".controller.fragments.SignupFragment">
+    tools:context=".controller.fragments.SignupFragment"
+    android:background="@drawable/img_backgrand">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_width="337dp"
+        android:layout_height="355dp"
         android:layout_gravity="center"
         android:layout_margin="10dp"
         android:backgroundTint="#FDEDED"
-        app:cardCornerRadius="4dp"
+        app:cardCornerRadius="20dp"
         app:cardElevation="5dp">
 
         <LinearLayout
@@ -22,6 +23,13 @@
             android:layout_margin="16dp"
             android:orientation="vertical">
 
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="96dp"
+                android:layout_height="69dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_add_user" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/edittxt_signup_username"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -29,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/edittext_signup_username"
-                android:padding="8dp"
+                android:padding="2dp"
                 app:counterEnabled="true"
                 app:counterMaxLength="12"
                 app:errorEnabled="true"
@@ -45,11 +53,10 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/edittxt_signup_password"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/edittext_signup_username"
-                android:padding="8dp"
+                android:padding="2dp"
                 app:errorEnabled="true"
                 app:passwordToggleEnabled="true">
 
@@ -72,8 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
-                android:layout_marginTop="8dp"
-                android:backgroundTint="#DC2A2A"
+                android:backgroundTint="#E91E63"
                 android:text="@string/button_signup"
                 android:textSize="18sp"
                 android:textStyle="normal" />

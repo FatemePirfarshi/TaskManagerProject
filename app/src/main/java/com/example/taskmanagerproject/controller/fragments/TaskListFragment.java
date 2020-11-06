@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AutoCompleteTextView;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -44,7 +45,9 @@ public class TaskListFragment extends Fragment {
     public static final String TASK_LIST_POSITION = "taskListPosition";
     public static final int REQUEST_CODE_DELETE_ALL = 1;
     public static final String FRAGMENT_TAG_DELETE_ALL = "deleteAll";
+    public static final String KEY_SEARCH_TITLE = "searchTitle";
 
+    private String searchTitle;
     private RecyclerView mRecyclerView;
     private ImageView mImageView;
     private LinearLayout mLayoutDefault;
@@ -54,6 +57,8 @@ public class TaskListFragment extends Fragment {
     private List<Task> mTaskList = new ArrayList<>();
     private TaskDBRepository mRepository;
     private TaskAdapter mTaskAdapter;
+
+    private Callbacks mCallbacks;
 
     public TaskListFragment() {
         // Required empty public constructor
@@ -68,10 +73,24 @@ public class TaskListFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof Callbacks)
+            mCallbacks = (Callbacks) context;
+        else {
+            throw new ClassCastException(context.toString()
+                    + " must implement Callbacks");
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
+
+        if(savedInstanceState != null)
+            searchTitle = savedInstanceState.getString(KEY_SEARCH_TITLE);
 
         if (mTaskList.size() == 0)
             mPosition = getArguments().getInt(TASK_LIST_POSITION);
@@ -87,14 +106,23 @@ public class TaskListFragment extends Fragment {
         MenuItem searchItem = menu.findItem(R.id.app_bar_search);
 
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) searchItem.getActionView();
+        final SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
 
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
+        if(searchTitle != null) {
+            searchItem.expandActionView();
+            searchView.setQuery(searchTitle, true);
+            mTaskAdapter.getFilter().filter(searchTitle);
+            searchView.clearFocus();
+
+        }
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+//                searchView.setQuery(s, false);
                 return false;
             }
 
@@ -104,6 +132,7 @@ public class TaskListFragment extends Fragment {
                 return false;
             }
         });
+
     }
 
     @Override
@@ -134,6 +163,8 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        outState.putString(KEY_SEARCH_TITLE, searchTitle);
     }
 
     @Override
@@ -160,10 +191,14 @@ public class TaskListFragment extends Fragment {
         setEmptyList();
     }
 
-    private void updateUI() {
+    public void updateUI() {
         mRepository.updateList();
         mTaskList = mRepository.getListWithPosition(mPosition);
-//  mTaskAdapter.notifyItemInserted(mTaskList.size() - 1);
+        setAdapterList();
+        setEmptyList();
+    }
+
+    private void setAdapterList() {
         if (mTaskAdapter == null) {
             mTaskAdapter = new TaskAdapter(mTaskList);
             mRecyclerView.setAdapter(mTaskAdapter);
@@ -171,13 +206,19 @@ public class TaskListFragment extends Fragment {
             mTaskAdapter.setTasks(mTaskList);
             mTaskAdapter.notifyDataSetChanged();
         }
+    }
+
+    public void updateUI(int position){
+        mRepository.updateList();
+        mTaskList = mRepository.getListWithPosition(position);
+        setAdapterList();
         setEmptyList();
     }
 
     private void updateUI(Task task, int position) {
         mRepository.updateTask(task);
         mRepository.updateList();
-        mTaskList = mRepository.getListWithPosition(position);
+        mTaskList = mRepository.getListWithPosition(mPosition);
         mTaskAdapter.setTasks(mTaskList);
         mTaskAdapter.notifyDataSetChanged();
         setEmptyList();
@@ -343,6 +384,7 @@ public class TaskListFragment extends Fragment {
                     filteredList.addAll(mTasksFull);
                 else {
                     String filter = charSequence.toString().toLowerCase().trim();
+                    searchTitle = filter;
                     for (Task task : mTasksFull) {
 
                         if (task.getTitle().toLowerCase().contains(filter) ||
@@ -388,14 +430,15 @@ public class TaskListFragment extends Fragment {
             //  int position = data.getIntExtra(ShowDetailFragment.EXTRA_CURRENT_POSITION, 0);
             Task newTask = (Task) data.getSerializableExtra(ShowDetailFragment.EXTRA_NEW_TASK);
 
-            if (data.getBooleanExtra(ShowDetailFragment.EXTRA_EDIT_TASK, false))
+            if (data.getBooleanExtra(ShowDetailFragment.EXTRA_EDIT_TASK, false)) {
                 position = newTask.getPosition();
-            else
+                mRepository.updateTask(newTask);
+            } else {
                 position = data.getIntExtra(ShowDetailFragment.EXTRA_TASK_EDITED_CURRENT_POSITION, 0);
+            }
 
             if (newTask != null) {
                 updateUI(newTask, position);
-                mPosition = position;
             } else {
                 int deletedTaskPosition = data.getIntExtra(
                         ShowDetailFragment.EXTRA_TASK_DELETED_CURRENT_POSITION, 0);
@@ -404,6 +447,12 @@ public class TaskListFragment extends Fragment {
                 mImageView.setImageResource(imageRes);
                 updateUI();
             }
+            if(newTask.getPosition() != mPosition && newTask != null)
+                mCallbacks.onTaskListUpdated(newTask.getPosition());
         }
+    }
+
+    public interface Callbacks{
+        void onTaskListUpdated(int position);
     }
 }

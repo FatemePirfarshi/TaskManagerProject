@@ -149,7 +149,6 @@ public class TaskDBRepository implements TaskDatabaseDAO {
             if (userTasksList.get(i).user.getId().equals(mUserID))
                 tasks = userTasksList.get(i).tasks;
         }
-
         mTodoTasks.clear();
         mDoingTasks.clear();
         mDoneTasks.clear();
@@ -169,9 +168,21 @@ public class TaskDBRepository implements TaskDatabaseDAO {
     }
 
     public void deleteAll() {
-        for (int i = 0; i < mTaskListMain.size(); i++) {
-            mTaskDAO.deleteTask(mTaskListMain.get(i));
+        List<UserWithTasks> userTasksList = mUserDAO.getUsersWithTasks();
+        for (int i = 0; i < userTasksList.size(); i++) {
+            if (userTasksList.get(i).user.getId().equals(mUserID))
+                tasks = userTasksList.get(i).tasks;
+            //userTasksList.get(i).user.setTaskNumber(userTasksList.get(i).tasks.size());
         }
+
+//        for (int i = 0; i < mTaskDAO.getTasks().size(); i++) {
+//            mTaskDAO.deleteTask(mTaskDAO.getTasks().get(i));
+//        }
+    }
+
+    @Override
+    public void deleteAll(UUID uuid) {
+
     }
 
     public File getPhotoFile(Task task){

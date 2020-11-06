@@ -23,9 +23,7 @@ public class ChangeStateFragment extends DialogFragment {
     public static final String USER_SELECTED_POSITION = "userSelectedPosition";
 
     private RadioGroup mRadioGroupStates;
-    private RadioButton mButtonTodo;
-    private RadioButton mButtonDoing;
-    private RadioButton mButtonDone;
+    private RadioButton mButtonTodo, mButtonDoing, mButtonDone;
 
     private int mCurrentPosition;
 

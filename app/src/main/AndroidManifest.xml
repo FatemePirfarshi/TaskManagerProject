@@ -5,10 +5,10 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
-    <uses-feature android:name="android.hardware.type.watch" />
 
     <uses-permission android:name=" android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -33,9 +33,6 @@
         </activity>
         <activity android:name=".controller.activities.TaskPagerActivity" />
 
-        <meta-data
-            android:name="com.google.android.wearable.standalone"
-            android:value="true" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

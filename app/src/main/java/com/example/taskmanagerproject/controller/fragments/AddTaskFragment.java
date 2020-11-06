@@ -57,17 +57,12 @@ public class AddTaskFragment extends DialogFragment {
     public static final String ARGS_CURRENT_USER = "currentUser";
     public static final String AUTHORITY = "com.example.taskmanagerproject.fileProvider";
     public static final int REQUEST_CODE_CHOOSE_PHOTO = 3;
+    public static final String KEY_PHOTO_PATH = "photoPath";
 
-    private EditText mEditTextTitle;
-    private EditText mEditTextDescription;
-    private Button mButtonDate;
-    private Button mButtonTime;
+    private EditText mEditTextTitle, mEditTextDescription;
+    private Button mButtonDate, mButtonTime, mButtonTakePhoto, mButtonChoosePhoto;
     private CheckBox mCheckBoxDone;
-
     private ImageView mImageViewPhoto;
-    private Button mButtonTakePhoto;
-    private Button mButtonChoosePhoto;
-
     private LinearLayout mRootLinearLayout;
 
     private TaskDBRepository mRepository;
@@ -77,13 +72,14 @@ public class AddTaskFragment extends DialogFragment {
     private Task mTask = new Task();
 
     private File mPhotoFile;
+    private String mPhotoPath;
+
+    private Date userSelectedDate;
+    private Long userSelectedTime;
 
     public Task getTask() {
         return mTask;
     }
-
-    private Date userSelectedDate;
-    private Long userSelectedTime;
 
     public AddTaskFragment() {
         // Required empty public constructor
@@ -113,15 +109,17 @@ public class AddTaskFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-        View view = layoutInflater.inflate(R.layout.fragment_show_detail, null);
+        View view = layoutInflater.inflate(R.layout.fragment_add_task, null);
 
         findViews(view);
 
         if (savedInstanceState != null) {
             userSelectedDate = (Date) savedInstanceState.getSerializable(KEY_USER_SELECTED_DATE);
             userSelectedTime = savedInstanceState.getLong(KEY_USER_SELECTED_TIME);
+            mPhotoPath = savedInstanceState.getString(KEY_PHOTO_PATH);
             mTask.setDate(userSelectedDate);
             mTask.getDate().setTime(userSelectedTime);
+            setPhotoView(mPhotoPath);
         }
 
         initViews();
@@ -225,12 +223,15 @@ public class AddTaskFragment extends DialogFragment {
     }
 
     private void choosePhotoIntent() {
-        Intent choosePhotoIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent choosePhotoIntent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+       // Intent choosePhotoIntent = new Intent(Intent.ACTION_GET_CONTENT);
         choosePhotoIntent.setType("image/*");
-        if (choosePhotoIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-//            choosePhotoIntent.putExtra(MediaStore.Images.Media.DATA, );
+
+        if (choosePhotoIntent.resolveActivity(getActivity().getPackageManager()) != null)
             startActivityForResult(choosePhotoIntent, REQUEST_CODE_CHOOSE_PHOTO);
-        }
+
     }
 
     private void takePictureIntent() {
@@ -293,40 +294,15 @@ public class AddTaskFragment extends DialogFragment {
             updatePhotoView();
 
         } else if (requestCode == REQUEST_CODE_CHOOSE_PHOTO) {
+//            Bitmap bitmap = MediaStore.Images.Media.getContentUri(getC)
             Uri photoUri = data.getData();
             getPathFromUri(photoUri);
             mImageViewPhoto.setImageURI(photoUri);
         }
     }
 
-    //
-//    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
-//        ParcelFileDescriptor parcelFileDescriptor =
-//                getActivity().getContentResolver().openFileDescriptor(uri, "r");
-//        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-//        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-//        parcelFileDescriptor.close();
-//        return image;
-//    }
-//    private String getPathFromURI(Uri contentUri) {
-//        Cursor cursor = getContentResolver().query(contentUri, null, null, null, null);
-//        cursor.moveToFirst();
-//        String document_id = cursor.getString(0);
-//        document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
-//        cursor.close();
-//
-//        cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null
-//                , MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
-//        cursor.moveToFirst();
-//        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-//        cursor.close();
-//
-//        return path;
-//    }
-
     private void getPathFromUri(Uri photoUri) {
-
-        String[] projection = new String[]{MediaStore.Images.Media.DATA};
+        String[] projection = new String[]{MediaStore.Images.ImageColumns.DATA};
         Cursor cursor = getActivity().getContentResolver().query(
                 photoUri,
                 projection,
@@ -339,8 +315,10 @@ public class AddTaskFragment extends DialogFragment {
 
         try {
             cursor.moveToFirst();
-            String imagePath = cursor.getString(0);
+
+            String imagePath = cursor.getString(cursor.getColumnIndex(projection[0]));
             mTask.setPhotoPath(imagePath);
+//            /storage/emulated/0/DCIM/Camera/IMG_20201106_111237.jpg
         } finally {
             cursor.close();
         }
@@ -353,6 +331,8 @@ public class AddTaskFragment extends DialogFragment {
         userSelectedTime = mTask.getTime();
         outState.putSerializable(KEY_USER_SELECTED_DATE, userSelectedDate);
         outState.putLong(KEY_USER_SELECTED_TIME, userSelectedTime);
+        mPhotoPath = mTask.getPhotoPath();
+        outState.putString(KEY_PHOTO_PATH, mPhotoPath);
     }
 
     public void updateTaskDate(Date userSelectedDate) {
@@ -371,5 +351,16 @@ public class AddTaskFragment extends DialogFragment {
         Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getAbsolutePath(), getActivity());
         mTask.setPhotoPath(mPhotoFile.getAbsolutePath());
         mImageViewPhoto.setImageBitmap(bitmap);
+    }
+
+    private void setPhotoView(String photoPath) {
+        if (photoPath != null) {
+            File mPhotoFile = new File(photoPath);
+            if (mPhotoFile == null || !mPhotoFile.exists())
+                return;
+            Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getAbsolutePath(), getActivity());
+            mImageViewPhoto.setImageBitmap(bitmap);
+        }
+        mTask.setPhotoPath(photoPath);
     }
 }
