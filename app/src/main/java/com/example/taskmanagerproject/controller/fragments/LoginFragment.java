@@ -123,14 +123,8 @@ public class LoginFragment extends Fragment {
 
                 if (user != null) {
                     Log.d(TAG, "onClick: mUserId" + user.getUserId());
-                    mTaskDBRepository.setLists(user.getId());
-                    if(user.isAdmin()) {
-                        UsersActivity.start(getActivity());
-                        getActivity().finish();
-                        return;
-                    }
-                    TaskPagerActivity.start(getActivity(), 0, user.getUserId());
-                    getActivity().finish();
+                    mTaskDBRepository.setLists(user.getUserId());
+                    getStartActivity(user);
 
                 } else if (user == null)
                     Snackbar.make(mFrameLayout,
@@ -139,14 +133,9 @@ public class LoginFragment extends Fragment {
                 else if (mEditTextUserName.getEditText().getText().toString().equals(signupUsername) &&
                         mEditTextPassword.getEditText().getText().toString().equals(signupPassword)) {
 
-                    mTaskDBRepository.setLists(mUserId);
-                    if(user.isAdmin()) {
-                        UsersActivity.start(getActivity());
-                        getActivity().finish();
-                        return;
-                    }
-                    TaskPagerActivity.start(getActivity(), 0, user.getUserId());
-                    getActivity().finish();
+                    mTaskDBRepository.setLists(user.getUserId());
+                    Log.d(TAG,"user id" + user.getUserId());
+                    getStartActivity(user);
                 } else
                     Snackbar.make(mFrameLayout,
                             "Your information are not valid!!", Snackbar.LENGTH_LONG).show();
@@ -162,6 +151,16 @@ public class LoginFragment extends Fragment {
                 );
             }
         });
+    }
+
+    private void getStartActivity(User user) {
+        if (user.isAdmin()) {
+            UsersActivity.start(getActivity());
+            getActivity().finish();
+            return;
+        }
+        TaskPagerActivity.start(getActivity(), 0, user.getUserId());
+        getActivity().finish();
     }
 
     private boolean validateInput() {

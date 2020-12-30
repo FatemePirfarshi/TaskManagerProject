@@ -111,7 +111,7 @@ public class UserListFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mTaskDBRepository.setLists(mUser.getId());
+                    mTaskDBRepository.setLists(mUser.getUserId());
                     TaskPagerActivity.start(getActivity(), 0, mUser.getUserId());
                     getActivity().finish();
                 }

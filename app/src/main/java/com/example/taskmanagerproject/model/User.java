@@ -11,7 +11,7 @@ import java.util.UUID;
 @Entity(tableName = "userTable")
 public class User {
 
-    @ForeignKey(entity = User.class, parentColumns = "userId", childColumns = "userCreatorId")
+//    @ForeignKey(entity = User.class, parentColumns = "userId", childColumns = "userCreatorId")
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "userId")
     private long userId;

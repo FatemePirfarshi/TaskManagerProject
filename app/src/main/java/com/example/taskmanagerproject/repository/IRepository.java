@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface IRepository {
 
-    List<Task> getTaskStates(int position);
+    List<Task> getTasksWithState(int position, long userId);
 
     List<Task> getTasks();
 

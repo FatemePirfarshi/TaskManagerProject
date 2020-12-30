@@ -3,8 +3,7 @@ package com.example.taskmanagerproject.controller.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -14,7 +13,6 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.controller.adapter.TaskPagerAdapter;
 import com.example.taskmanagerproject.controller.fragments.AddTaskFragment;
-import com.example.taskmanagerproject.controller.fragments.DeleteAllFragment;
 import com.example.taskmanagerproject.controller.fragments.TaskListFragment;
 import com.example.taskmanagerproject.repository.IRepository;
 import com.example.taskmanagerproject.repository.TaskDBRepository;
@@ -22,9 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.UUID;
-
-public class TaskPagerActivity extends AppCompatActivity implements TaskListFragment.Callbacks {
+public class TaskPagerActivity extends AppCompatActivity{
 
     public static final String FRAGMENT_TAG_ADD_TASK = "fragmentTagAddTask";
     public static final String EXTRA_CURRENT_POSITION =
@@ -33,6 +29,7 @@ public class TaskPagerActivity extends AppCompatActivity implements TaskListFrag
     public static final int REQUEST_CODE_DELETE_ALL = 200;
     public static final String FRAGMENT_TAG_DELETE_ALL = "deleteAll";
     public static final String EXTRA_CURRENT_USER_ID = "currentUserId";
+    public static final String TAG = "TaskPagerActivity";
 
     public static void start(Context context, int position, long userId) {
         Intent starter = new Intent(context, TaskPagerActivity.class);
@@ -72,7 +69,7 @@ public class TaskPagerActivity extends AppCompatActivity implements TaskListFrag
 
     private void initViews() {
 
-        mTaskPagerAdapter = new TaskPagerAdapter(this, this);
+        mTaskPagerAdapter = new TaskPagerAdapter(this, this, mUserId);
         // mViewPager2.setOffscreenPageLimit(0);
         mViewPager2.setAdapter(mTaskPagerAdapter);
         mViewPager2.setCurrentItem(mCurrentPosition);
@@ -102,12 +99,13 @@ public class TaskPagerActivity extends AppCompatActivity implements TaskListFrag
         });
     }
 
-    @Override
-    public void onTaskListUpdated(int position) {
-        if (findViewById(R.id.fragment_container) != null) {
-            TaskListFragment taskListFragment = (TaskListFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.fragment_container);
-            taskListFragment.updateUI(position);
-        }
-    }
+//    @Override
+//    public void onTaskListUpdated(int position) {
+//        if (findViewById(R.id.fragment_container) != null) {
+//            TaskListFragment taskListFragment = (TaskListFragment) getSupportFragmentManager()
+//                    .findFragmentById(R.id.fragment_container);
+//            taskListFragment.updateUI(position);
+//            Log.d(TAG,"Position" + position);
+//        }
+//    }
 }

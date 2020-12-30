@@ -1,6 +1,7 @@
 package com.example.taskmanagerproject.repository;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.room.Room;
 
@@ -20,11 +21,12 @@ import java.util.UUID;
 
 public class TaskDBRepository implements TaskDatabaseDAO {
 
+    public static final String TAG = "TaskDBRepository";
     private static TaskDBRepository sInstance;
     private TaskDatabaseDAO mTaskDAO;
     private UserDatabaseDAO mUserDAO;
     private Context mContext;
-    private UUID mUserID;
+    private long mUserID;
 
     public static TaskDBRepository getInstance(Context context, int position) {
         if (sInstance == null)
@@ -42,36 +44,30 @@ public class TaskDBRepository implements TaskDatabaseDAO {
         mTaskDAO = taskDatabase.getTaskDAO();
         mUserDAO = taskDatabase.getUserDAO();
 
-        mTaskListMain = mTaskDAO.getTasks();
         mCurrentPosition = position;
     }
 
-    private List<Task> mTaskListMain;
     private List<Task> mTodoTasks = new ArrayList<>();
     private List<Task> mDoingTasks = new ArrayList<>();
     private List<Task> mDoneTasks = new ArrayList<>();
-    List<Task> tasks = new ArrayList<>();
+    List<Task> tasks;
 
     private int mCurrentPosition;
 
-    private State mState;
-
-    @Override
-    public List<Task> getTaskStates(int position) {
-        return mTaskDAO.getTaskStates(position);
-    }
-
-    public void setLists(UUID userId) {
+    public void setLists(long userId) {
+        tasks = new ArrayList<>();
         mUserID = userId;
         mTodoTasks.clear();
         mDoingTasks.clear();
         mDoneTasks.clear();
 
-        List<UserWithTasks> userTasksList = mUserDAO.getUsersWithTasks();
-        for (int i = 0; i < userTasksList.size(); i++) {
-            if (userTasksList.get(i).user.getId().equals(userId))
-                tasks = userTasksList.get(i).tasks;
-//            userTasksList.get(i).user.setTaskNumber(userTasksList.get(i).tasks.size());
+        for (int i = 0; i < getTasks().size(); i++) {
+            if (getTasks().get(i).getUserCreatorId() == mUserID) {
+                tasks.add(getTasks().get(i));
+//                Log.d("TaskDBRepository", "user creator id: " +
+//                        getTasks().get(i).getUserCreatorId());
+//                Log.d("TaskDBRepository", "user id: " + mUserID);
+            }
         }
 
         for (int i = 0; i < tasks.size(); i++) {
@@ -91,17 +87,18 @@ public class TaskDBRepository implements TaskDatabaseDAO {
 
     public List<Task> getListWithPosition(int position) {
         mCurrentPosition = position;
+//        Log.d(TAG, "tasks size: " + getTasks().size());
         switch (position) {
             case 0:
-                mState = State.TODO;
                 return mTodoTasks;
-            //    return mTaskDAO.getTaskStates(0);
+               // Log.d(TAG, "tasks size: " + getTasksWithState(0, mUserID).size());
+//                return getTasksWithState(0, mUserID);
             case 1:
-                mState = State.DOING;
                 return mDoingTasks;
+//                return getTasksWithState(1, mUserID);
             default:
-                mState = State.DONE;
                 return mDoneTasks;
+//                return getTasksWithState(2, mUserID);
         }
     }
 
@@ -113,6 +110,11 @@ public class TaskDBRepository implements TaskDatabaseDAO {
     @Override
     public Task getTask(UUID uuid) {
         return mTaskDAO.getTask(uuid);
+    }
+
+    @Override
+    public List<Task> getTasksWithState(int position, long userId) {
+        return mTaskDAO.getTasksWithState(position, userId);
     }
 
     @Override
@@ -143,17 +145,21 @@ public class TaskDBRepository implements TaskDatabaseDAO {
         }
     }
 
-    public void updateList(){
-        List<UserWithTasks> userTasksList = mUserDAO.getUsersWithTasks();
-        for (int i = 0; i < userTasksList.size(); i++) {
-            if (userTasksList.get(i).user.getId().equals(mUserID))
-                tasks = userTasksList.get(i).tasks;
-        }
+    public void updateList() {
+
+        tasks = new ArrayList<>();
         mTodoTasks.clear();
         mDoingTasks.clear();
         mDoneTasks.clear();
+        for (int i = 0; i < getTasks().size(); i++) {
+            if (getTasks().get(i).getUserCreatorId() == mUserID) {
+                tasks.add(getTasks().get(i));
+                Log.d(TAG,"position: " + getTasks().get(i).getPosition());
+            }
+        }
+
         for (int i = 0; i < tasks.size(); i++) {
-            switch (tasks.get(i).getPosition()){
+            switch (tasks.get(i).getPosition()) {
                 case 0:
                     mTodoTasks.add(tasks.get(i));
                     break;
@@ -167,25 +173,26 @@ public class TaskDBRepository implements TaskDatabaseDAO {
         }
     }
 
-    public void deleteAll() {
-        List<UserWithTasks> userTasksList = mUserDAO.getUsersWithTasks();
-        for (int i = 0; i < userTasksList.size(); i++) {
-            if (userTasksList.get(i).user.getId().equals(mUserID))
-                tasks = userTasksList.get(i).tasks;
-            //userTasksList.get(i).user.setTaskNumber(userTasksList.get(i).tasks.size());
+    public void updateList(Task task){
+        switch (task.getPosition()){
+            case 0:
+                mTodoTasks.add(task);
+                break;
+            case 1:
+                mDoingTasks.add(task);
+                break;
+            case 2:
+                mDoneTasks.add(task);
+                break;
         }
-
-//        for (int i = 0; i < mTaskDAO.getTasks().size(); i++) {
-//            mTaskDAO.deleteTask(mTaskDAO.getTasks().get(i));
-//        }
     }
 
     @Override
-    public void deleteAll(UUID uuid) {
-
+    public void deleteAll(long userID) {
+        mTaskDAO.deleteAll(mUserID);
     }
 
-    public File getPhotoFile(Task task){
+    public File getPhotoFile(Task task) {
         File filesDir = mContext.getFilesDir();
         File photoFile = new File(filesDir, task.getPhotoFileName());
         return photoFile;

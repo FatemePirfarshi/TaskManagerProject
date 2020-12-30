@@ -23,6 +23,8 @@ android {
 }
 
 dependencies {
+    def room_version = "2.2.5"
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
@@ -38,7 +40,6 @@ dependencies {
     compileOnly 'com.google.android.wearable:wearable:2.6.0'
 
     implementation 'com.squareup.picasso:picasso:2.71828'
-    def room_version = "2.2.5"
 
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"

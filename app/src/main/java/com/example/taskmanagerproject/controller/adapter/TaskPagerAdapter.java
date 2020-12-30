@@ -13,20 +13,23 @@ import com.example.taskmanagerproject.repository.TaskDBRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaskPagerAdapter extends FragmentStateAdapter {
+public class TaskPagerAdapter extends FragmentStateAdapter implements TaskListFragment.Callbacks  {
 
     private Context mContext;
+    private long mUserId;
 
     private TaskDBRepository mRepository = TaskDBRepository.getInstance(mContext, 0);
+
     private List<TaskListFragment> mFragments = new ArrayList<TaskListFragment>() {{
-        add(TaskListFragment.newInstance(0));
-        add(TaskListFragment.newInstance(1));
-        add(TaskListFragment.newInstance(2));
+        add(TaskListFragment.newInstance(0, mUserId));
+        add(TaskListFragment.newInstance(1, mUserId));
+        add(TaskListFragment.newInstance(2, mUserId));
     }};
 
-    public TaskPagerAdapter(@NonNull FragmentActivity fragmentActivity, Context context) {
+    public TaskPagerAdapter(@NonNull FragmentActivity fragmentActivity, Context context, long userId) {
         super(fragmentActivity);
         mContext = context;
+        mUserId =userId;
     }
 
     @NonNull
@@ -42,5 +45,10 @@ public class TaskPagerAdapter extends FragmentStateAdapter {
 
     public TaskListFragment getFragments(int position) {
         return mFragments.get(position);
+    }
+
+    @Override
+    public void onTaskListUpdated(int position) {
+       mFragments.get(position).updateUI(position);
     }
 }

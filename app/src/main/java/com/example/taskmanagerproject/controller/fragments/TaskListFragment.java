@@ -1,10 +1,13 @@
 package com.example.taskmanagerproject.controller.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,12 +29,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.taskmanagerproject.R;
 import com.example.taskmanagerproject.controller.activities.LoginActivity;
 import com.example.taskmanagerproject.controller.activities.TaskPagerActivity;
 import com.example.taskmanagerproject.model.Task;
 import com.example.taskmanagerproject.repository.TaskDBRepository;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,6 +52,8 @@ public class TaskListFragment extends Fragment {
     public static final int REQUEST_CODE_DELETE_ALL = 1;
     public static final String FRAGMENT_TAG_DELETE_ALL = "deleteAll";
     public static final String KEY_SEARCH_TITLE = "searchTitle";
+    public static final String KEY_USER_ID = "userCreatorId";
+    public static final String TAG = "TaskListFragment";
 
     private String searchTitle;
     private RecyclerView mRecyclerView;
@@ -57,6 +65,7 @@ public class TaskListFragment extends Fragment {
     private List<Task> mTaskList = new ArrayList<>();
     private TaskDBRepository mRepository;
     private TaskAdapter mTaskAdapter;
+    private long mUserId;
 
     private Callbacks mCallbacks;
 
@@ -64,23 +73,13 @@ public class TaskListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static TaskListFragment newInstance(int position) {
+    public static TaskListFragment newInstance(int position, long userId) {
         TaskListFragment fragment = new TaskListFragment();
         Bundle args = new Bundle();
         args.putInt(TASK_LIST_POSITION, position);
+        args.putLong(KEY_USER_ID, userId);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof Callbacks)
-            mCallbacks = (Callbacks) context;
-        else {
-            throw new ClassCastException(context.toString()
-                    + " must implement Callbacks");
-        }
     }
 
     @Override
@@ -94,6 +93,7 @@ public class TaskListFragment extends Fragment {
 
         if (mTaskList.size() == 0)
             mPosition = getArguments().getInt(TASK_LIST_POSITION);
+        mUserId = getArguments().getLong(KEY_USER_ID);
 
         mRepository = TaskDBRepository.getInstance(getActivity(), mPosition);
         mTaskList = mRepository.getListWithPosition(mPosition);
@@ -146,12 +146,22 @@ public class TaskListFragment extends Fragment {
                 return true;
 
             case R.id.item_delete_all:
+                final AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+                dialog.setMessage("Are you sure you want to delete all of your tasks?");
+                dialog.setCancelable(true);
 
-                DeleteAllFragment deleteAllFragment = DeleteAllFragment.newInstance(0);
-                deleteAllFragment.setTargetFragment(
-                        TaskListFragment.this, REQUEST_CODE_DELETE_ALL);
-                DeleteAllFragment.newInstance(0).show(
-                        getActivity().getSupportFragmentManager(), FRAGMENT_TAG_DELETE_ALL);
+                dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mRepository.deleteAll(mUserId);
+                        dialogInterface.cancel();
+                        mCallbacks.onTaskListUpdated(0);
+                        mCallbacks.onTaskListUpdated(1);
+                        mCallbacks.onTaskListUpdated(2);
+                    }
+                });
+                dialog.setNegativeButton("No", null);
+                dialog.create().show();
 
                 return true;
 
@@ -191,13 +201,6 @@ public class TaskListFragment extends Fragment {
         setEmptyList();
     }
 
-    public void updateUI() {
-        mRepository.updateList();
-        mTaskList = mRepository.getListWithPosition(mPosition);
-        setAdapterList();
-        setEmptyList();
-    }
-
     private void setAdapterList() {
         if (mTaskAdapter == null) {
             mTaskAdapter = new TaskAdapter(mTaskList);
@@ -208,9 +211,17 @@ public class TaskListFragment extends Fragment {
         }
     }
 
+    public void updateUI() {
+        mRepository.updateList();
+        mTaskList = mRepository.getListWithPosition(mPosition);
+        setAdapterList();
+        setEmptyList();
+    }
+
     public void updateUI(int position){
         mRepository.updateList();
         mTaskList = mRepository.getListWithPosition(position);
+        mTaskAdapter.notifyDataSetChanged();
         setAdapterList();
         setEmptyList();
     }
@@ -423,6 +434,7 @@ public class TaskListFragment extends Fragment {
         if (requestCode == TaskPagerActivity.REQUEST_CODE_ADD_TASK) {
             mPosition = data.getIntExtra(AddTaskFragment.EXTRA_NEW_TASK_position, 0);
             mTaskList = mRepository.getListWithPosition(mPosition);
+            Log.d(TAG, "Task Position: "+ mPosition);
             updateUI();
 
         } else if (requestCode == REQUEST_CODE_SHOW_DETAIL) {
@@ -447,8 +459,10 @@ public class TaskListFragment extends Fragment {
                 mImageView.setImageResource(imageRes);
                 updateUI();
             }
-            if(newTask.getPosition() != mPosition && newTask != null)
+            if(newTask.getPosition() != mPosition && newTask != null) {
+                Log.d(TAG, "Task Position: " + newTask.getPosition());
                 mCallbacks.onTaskListUpdated(newTask.getPosition());
+            }
         }
     }
 
